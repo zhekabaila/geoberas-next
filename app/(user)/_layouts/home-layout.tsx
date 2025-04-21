@@ -21,7 +21,7 @@ const HomeLayout = () => {
     if (!loading) setFetching(true)
 
     Fetcher({
-      url: 'http://localhost:3000/api/medium',
+      url: '/medium',
       onSuccess({ data }) {
         setMedium(data)
       },
@@ -39,7 +39,7 @@ const HomeLayout = () => {
     if (!premiumLoading) setPremiumFetching(true)
 
     Fetcher({
-      url: 'http://localhost:3000/api/premium',
+      url: '/premium',
       onSuccess({ data }) {
         setPremium(data)
       },

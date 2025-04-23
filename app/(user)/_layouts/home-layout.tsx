@@ -9,6 +9,8 @@ import { cn } from '@/lib/utils'
 import { motion, AnimatePresence } from 'framer-motion'
 import { MENU_HOME } from '../_constants/data'
 import dynamic from 'next/dynamic'
+import { ArrowBigUp } from 'lucide-react'
+import { useSearchParams } from 'next/navigation'
 
 const HomeSection = dynamic(() => import('../_components/home-section'), { ssr: false })
 const MemberSection = dynamic(() => import('../_components/member-section'), { ssr: false })
@@ -27,14 +29,23 @@ const HomeLayout = () => {
     setFetching: setPremiumFetching
   } = usePremiumStore()
 
+  const searchParams = useSearchParams()
+
+  const startMedium = searchParams.get('start_medium') || '2025-03-01'
+  const endMedium = searchParams.get('end_medium') || '2025-03-30'
+
+  const startPremium = searchParams.get('start_premium') || '2025-03-01'
+  const endPremium = searchParams.get('end_premium') || '2025-03-30'
+
+
   const fetchMedium = () => {
     if (!loading) setFetching(true)
 
     Fetcher({
       url: '/medium',
       params: {
-        start: '2025-01-01',
-        end: '2025-01-31'
+        start: startMedium,
+        end: endMedium
       },
       onSuccess({ data }) {
         setMedium(data)
@@ -81,7 +92,7 @@ const HomeLayout = () => {
   }
 
   return (
-    <main className="h-screen w-screen">
+    <main className="h-screen overflow-hidden w-screen">
       <section className="flex h-full">
         {MENU_HOME.map((menu, i) => (
           <div key={i} className={cn('flex', active === i ? 'flex-1' : 'flex-none')}>
@@ -89,7 +100,7 @@ const HomeLayout = () => {
               type="button"
               onClick={() => handleClick(i)}
               className={cn(
-                'flex items-end h-full justify-center py-10 w-28 max-w-[112px] border-r-4 border-x-black',
+                'flex items-end h-full justify-center py-10 w-20 max-w-[112px] border-r-4 border-x-black',
                 active === i ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground',
                 i - 1 === active && 'border-x-4'
               )}
@@ -99,14 +110,15 @@ const HomeLayout = () => {
                 boxShadow: active === i ? '0 10px 15px -3px rgba(0, 0, 0, 0.1)' : 'none'
               }}
               transition={{ duration: 0.2 }}>
-              <motion.p
-                className="text-3xl font-bold"
+              <motion.div
+                className="flex items-center justify-center gap-4 text-3xl font-bold"
                 style={{ writingMode: 'sideways-lr' }}
                 animate={{
                   color: active === i ? 'var(--primary-foreground)' : 'var(--secondary-foreground)'
                 }}>
+                {active === i && <ArrowBigUp className="w-8 h-8" />}
                 {menu.name}
-              </motion.p>
+              </motion.div>
             </motion.button>
             <AnimatePresence mode="wait">
               {active === i && (
@@ -117,7 +129,7 @@ const HomeLayout = () => {
                     opacity: 1,
                     transition: {
                       width: {
-                        duration: 0.7
+                        duration: 1
                       },
                       opacity: {
                         duration: 0.5,
@@ -130,7 +142,7 @@ const HomeLayout = () => {
                     opacity: 0,
                     transition: {
                       width: {
-                        duration: 0.7
+                        duration: 1
                       },
                       opacity: {
                         duration: 0.0

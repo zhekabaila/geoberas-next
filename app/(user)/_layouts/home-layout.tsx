@@ -124,8 +124,7 @@ const HomeLayout = () => {
                     opacity: 1,
                     transition: {
                       width: {
-                        duration: 0.7,
-                        ease: [0.4, 0, 0.2, 1]
+                        duration: 0.7
                       },
                       opacity: {
                         duration: 0.5,
@@ -138,11 +137,10 @@ const HomeLayout = () => {
                     opacity: 0,
                     transition: {
                       width: {
-                        duration: 0.6,
-                        ease: [0.4, 0, 0.2, 1]
+                        duration: 0.7
                       },
                       opacity: {
-                        duration: 0.4
+                        duration: 0.0
                       }
                     }
                   }}

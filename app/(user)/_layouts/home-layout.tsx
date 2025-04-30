@@ -20,7 +20,7 @@ const OtherProjectSection = dynamic(() => import('../_components/other-project-s
 
 const HomeLayout = () => {
   const [active, setActive] = useState(0)
-  const { setMedium, loading, setLoading, fetching, setFetching } = useMediumStore()
+  const { setMedium, loading, setLoading, fetching: mediumFetching, setFetching: setMediumFetching } = useMediumStore()
   const {
     setPremium,
     loading: premiumLoading,
@@ -31,21 +31,20 @@ const HomeLayout = () => {
 
   const searchParams = useSearchParams()
 
-  const startMedium = searchParams.get('start_medium') || '2025-03-01'
-  const endMedium = searchParams.get('end_medium') || '2025-03-30'
+  // const cStart = searchParams.get('c_start') || '2025-03-01'
+  // const cEnd = searchParams.get('c_end') || '2025-03-30'
 
-  const startPremium = searchParams.get('start_premium') || '2025-03-01'
-  const endPremium = searchParams.get('end_premium') || '2025-03-30'
-
+  const pStart = searchParams.get('p_start') || '2025-03-01'
+  const pEnd = searchParams.get('p_end') || '2025-03-30'
 
   const fetchMedium = () => {
-    if (!loading) setFetching(true)
+    if (!loading) setMediumFetching(true)
 
     Fetcher({
       url: '/medium',
       params: {
-        start: startMedium,
-        end: endMedium
+        start: pStart,
+        end: pEnd
       },
       onSuccess({ data }) {
         setMedium(data)
@@ -55,7 +54,7 @@ const HomeLayout = () => {
       },
       onFinally() {
         if (loading) setLoading(false)
-        else setFetching(false)
+        else setMediumFetching(false)
       }
     })
   }
@@ -66,8 +65,8 @@ const HomeLayout = () => {
     Fetcher({
       url: '/premium',
       params: {
-        start: '2025-01-01',
-        end: '2025-01-31'
+        start: pStart,
+        end: pEnd
       },
       onSuccess({ data }) {
         setPremium(data)
@@ -85,7 +84,7 @@ const HomeLayout = () => {
   useEffect(() => {
     fetchMedium()
     fetchPremium()
-  }, [])
+  }, [pStart, pEnd])
 
   const handleClick = (i: number) => {
     setActive(i)
@@ -158,7 +157,9 @@ const HomeLayout = () => {
                       delay: 0.4,
                       duration: 0.5
                     }}>
-                    {menu.section === 'home' && <HomeSection />}
+                    {menu.section === 'home' && (
+                      <HomeSection mediumFetching={mediumFetching} premiumFetching={premiumFetching} />
+                    )}
                     {menu.section === 'member' && <MemberSection />}
                     {menu.section === 'technology' && <TechnologySection />}
                     {menu.section === 'calculator' && <CalculatorSection />}

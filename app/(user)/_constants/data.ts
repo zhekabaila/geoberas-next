@@ -4,11 +4,11 @@ export const MENU_HOME = [
     name: 'Home',
     section: 'home'
   },
-  {
-    id: 2,
-    name: 'Calculator',
-    section: 'calculator'
-  },
+  // {
+  //   id: 2,
+  //   name: 'Calculator',
+  //   section: 'calculator'
+  // },
   // {
   //   id: 3,
   //   name: 'About',

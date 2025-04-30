@@ -9,6 +9,7 @@ interface PremiumState {
   setPremium: (premium: Premium[]) => void
   setLoading: (loading: boolean) => void
   setFetching: (fetching: boolean) => void
+  setPrediksi: (prediksi: Premium[]) => void
 }
 
 export const usePremiumStore = create<PremiumState>((set) => ({
@@ -18,5 +19,9 @@ export const usePremiumStore = create<PremiumState>((set) => ({
   selectedDeleteData: [],
   setPremium: (premium) => set({ premium }),
   setLoading: (loading) => set({ loading }),
-  setFetching: (fetching) => set({ fetching })
+  setFetching: (fetching) => set({ fetching }),
+  setPrediksi: (prediksi) =>
+    set((state) => ({
+      premium: [...state.premium, ...prediksi]
+    }))
 }))

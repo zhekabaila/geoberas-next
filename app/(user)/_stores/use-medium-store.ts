@@ -9,6 +9,7 @@ interface MediumState {
   setMedium: (medium: Medium[]) => void
   setLoading: (loading: boolean) => void
   setFetching: (fetching: boolean) => void
+  setPrediksi: (prediksi: Medium[]) => void
 }
 
 export const useMediumStore = create<MediumState>((set) => ({
@@ -18,5 +19,9 @@ export const useMediumStore = create<MediumState>((set) => ({
   selectedDeleteData: [],
   setMedium: (medium) => set({ medium }),
   setLoading: (loading) => set({ loading }),
-  setFetching: (fetching) => set({ fetching })
+  setFetching: (fetching) => set({ fetching }),
+  setPrediksi: (prediksi) =>
+    set((state) => ({
+      medium: [...state.medium, ...prediksi]
+    }))
 }))

@@ -91,46 +91,97 @@ const HomeSection = ({ mediumFetching, premiumFetching }: IProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const prediksiHargaBeras = (hargaBeras: Data[], targetDate: Date, jenisBeras: 'medium' | 'premium') => {
-    if (hargaBeras.length < 2) return []
+  // const prediksiHargaBeras = (hargaBeras: Data[], targetDate: Date, jenisBeras: 'medium' | 'premium') => {
+  //   if (hargaBeras.length < 2) return []
 
-    // Mendapatkan tanggal terakhir dari data historis
-    const lastDataDate = new Date(hargaBeras[hargaBeras.length - 1].date)
+  //   // Mendapatkan tanggal terakhir dari data historis
+  //   const lastDataDate = new Date(hargaBeras[hargaBeras.length - 1].date)
 
-    // Menghitung total hari yang perlu diprediksi
-    const diffTime = targetDate.getTime() - lastDataDate.getTime()
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+  //   // Menghitung total hari yang perlu diprediksi
+  //   const diffTime = targetDate.getTime() - lastDataDate.getTime()
+  //   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
 
-    if (diffDays <= 0) return []
+  //   if (diffDays <= 0) return []
 
-    const prediksi: (Data & { type: 'prediksi' })[] = []
-    let totalPerubahan = 0
+  //   const prediksi: (Data & { type: 'prediksi' })[] = []
+  //   let totalPerubahan = 0
 
-    // Menghitung total perubahan harga
-    for (let i = 1; i < hargaBeras.length; i++) {
-      totalPerubahan += hargaBeras[i].price - hargaBeras[i - 1].price
+  //   // Menghitung total perubahan harga
+  //   for (let i = 1; i < hargaBeras.length; i++) {
+  //     totalPerubahan += hargaBeras[i].price - hargaBeras[i - 1].price
+  //   }
+  //   const rataRataPerubahanHarian = totalPerubahan / (hargaBeras.length - 1)
+
+  //   // Menghitung prediksi untuk setiap hari sampai tanggal target
+  //   for (let i = 1; i <= diffDays; i++) {
+  //     const tanggalPrediksi = new Date(lastDataDate)
+  //     tanggalPrediksi.setDate(tanggalPrediksi.getDate() + i)
+
+  //     const hargaSebelumnya = i === 1 ? hargaBeras[hargaBeras.length - 1].price : prediksi[i - 2].price
+
+  //     prediksi.push({
+  //       date: format(tanggalPrediksi, 'yyyy-MM-dd'),
+  //       price: Number((hargaSebelumnya + rataRataPerubahanHarian).toFixed(3)),
+  //       type: 'prediksi'
+  //     })
+  //   }
+
+  //   if (jenisBeras === 'medium') {
+  //     setMediumPrediksi(prediksi)
+  //     setActiveTab('medium')
+  //   } else {
+  //     setPremiumPrediksi(prediksi)
+  //     setActiveTab('premium')
+  //   }
+  // }
+
+  function prediksiHargaBerasGeometric(hargaBeras: Data[], targetDate: Date, jenisBeras: 'medium' | 'premium') {
+    if (hargaBeras.length < 2) {
+      throw new Error('Data historis minimal harus 2 entri.')
     }
-    const rataRataPerubahanHarian = totalPerubahan / (hargaBeras.length - 1)
 
-    // Menghitung prediksi untuk setiap hari sampai tanggal target
-    for (let i = 1; i <= diffDays; i++) {
-      const tanggalPrediksi = new Date(lastDataDate)
-      tanggalPrediksi.setDate(tanggalPrediksi.getDate() + i)
+    // Hitung rata-rata rasio pertumbuhan harian
+    let totalRasio = 0
+    let count = 0
 
-      const hargaSebelumnya = i === 1 ? hargaBeras[hargaBeras.length - 1].price : prediksi[i - 2].price
+    for (let i = 1; i < hargaBeras.length; i++) {
+      const hargaHariIni = hargaBeras[i].price
+      const hargaSebelumnya = hargaBeras[i - 1].price
+      const rasio = hargaHariIni / hargaSebelumnya
+      totalRasio += rasio
+      count++
+    }
 
-      prediksi.push({
-        date: format(tanggalPrediksi, 'yyyy-MM-dd'),
-        price: Number((hargaSebelumnya + rataRataPerubahanHarian).toFixed(3)),
+    const rataRasio = totalRasio / count
+
+    // Ambil harga terakhir dan tanggal terakhir dari data historis
+    const hargaTerakhir = hargaBeras[hargaBeras.length - 1].price
+    const tanggalTerakhir = new Date(hargaBeras[hargaBeras.length - 1].date)
+    const tanggalAkhir = new Date(targetDate)
+
+    const hasilPrediksi = []
+
+    let index = 1
+    const tanggal = new Date(tanggalTerakhir)
+
+    while (tanggal < tanggalAkhir) {
+      tanggal.setDate(tanggal.getDate() + 1)
+      const hargaPrediksi = hargaTerakhir * Math.pow(rataRasio, index)
+
+      hasilPrediksi.push({
+        date: tanggal.toISOString().split('T')[0],
+        price: parseFloat(hargaPrediksi.toFixed(3)),
         type: 'prediksi'
       })
+
+      index++
     }
 
     if (jenisBeras === 'medium') {
-      setMediumPrediksi(prediksi)
+      setMediumPrediksi(hasilPrediksi)
       setActiveTab('medium')
     } else {
-      setPremiumPrediksi(prediksi)
+      setPremiumPrediksi(hasilPrediksi)
       setActiveTab('premium')
     }
   }
@@ -214,7 +265,7 @@ const HomeSection = ({ mediumFetching, premiumFetching }: IProps) => {
                         <Button
                           variant="outline"
                           onClick={() =>
-                            prediksiHargaBeras(
+                            prediksiHargaBerasGeometric(
                               prediksiPayload.jenis === 'medium' ? medium : premium,
                               prediksiPayload.tanggal!,
                               prediksiPayload.jenis
@@ -237,49 +288,57 @@ const HomeSection = ({ mediumFetching, premiumFetching }: IProps) => {
           </Tabs>
           <div className="mt-5 bg-background rounded-md p-6">
             <h2 className="text-xl font-bold">Metodologi Perhitungan Prediksi</h2>
-            <p className="text-base text-gray-400 mt-2">
-              Prediksi harga beras di Indonesia menggunakan model matematika yang terdiri dari beberapa tahap:
+            <p className="text-base  mt-2">
+              Prediksi harga beras di Indonesia pada aplikasi ini menggunakan metode{' '}
+              <span className="font-semibold">barisan geometri</span> dengan langkah-langkah sebagai berikut:
             </p>
             <div className="mt-4 space-y-4">
               <div>
-                <h3 className="text-lg font-semibold">1. Perhitungan Rata-rata Perubahan Harian</h3>
-                <p className="text-gray-400 mt-1">Untuk menghitung rata-rata perubahan harga harian, digunakan rumus:</p>
-                <div className="bg-secondary/50 p-4 rounded-md mt-2">
-                  <p className="font-mono">Rata-rata Perubahan = Σ(Harga[i] - Harga[i-1]) / (n-1)</p>
-                  <p className="text-sm text-gray-400 mt-2">
-                    Dimana:
-                    <br />
-                    - Harga[i] adalah harga pada hari ke-i
-                    <br />
-                    - Harga[i-1] adalah harga pada hari sebelumnya
-                    <br />- n adalah jumlah total data historis
-                  </p>
-                </div>
+                <h3 className="text-lg font-semibold">1. Pengambilan Data Harga Harian</h3>
+                <p className=" mt-1">Ambil data harga beras harian dari data historis yang tersedia.</p>
               </div>
-
               <div>
-                <h3 className="text-lg font-semibold">2. Prediksi Harga untuk Hari Berikutnya</h3>
-                <p className="text-gray-400 mt-1">
-                  Setelah mendapatkan rata-rata perubahan harian, harga untuk hari-hari berikutnya dihitung dengan rumus:
+                <h3 className="text-lg font-semibold">2. Hitung Rasio Pertumbuhan Harian</h3>
+                <p className=" mt-1">Hitung rasio pertumbuhan harian dengan rumus:</p>
+                <div className="bg-secondary/50 p-4 rounded-md mt-2">
+                  <p className="font-mono">Rasio-i = Harga hari ke-i / Harga hari ke-(i-1)</p>
+                </div>
+                <p className="text-sm  mt-2">Lakukan perhitungan ini untuk setiap hari dalam data (kecuali hari pertama).</p>
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold">3. Hitung Rata-rata Rasio Pertumbuhan</h3>
+                <p className=" mt-1">
+                  Setelah mendapatkan seluruh rasio harian, hitung rata-rata dari semua rasio tersebut dengan rumus:
                 </p>
                 <div className="bg-secondary/50 p-4 rounded-md mt-2">
-                  <p className="font-mono">Harga Prediksi = Harga Sebelumnya + Rata-rata Perubahan</p>
-                  <p className="text-sm text-gray-400 mt-2">
-                    Dimana:
-                    <br />
-                    - Harga Sebelumnya adalah harga terakhir yang diketahui
-                    <br />- Rata-rata Perubahan adalah nilai yang didapat dari perhitungan sebelumnya
-                  </p>
+                  <p className="font-mono">r = (r₁ + r₂ + ... + rₙ) / n</p>
                 </div>
+                <p className="text-sm  mt-2">
+                  Di mana r₁, r₂, ..., rₙ adalah rasio pertumbuhan harian dan n adalah jumlah rasio yang dihitung.
+                </p>
               </div>
-
               <div>
-                <h3 className="text-lg font-semibold">3. Karakteristik Model</h3>
-                <ul className="list-disc list-inside text-gray-400 mt-1 space-y-2">
-                  <li>Model menggunakan pendekatan linear untuk memprediksi tren harga</li>
-                  <li>Prediksi didasarkan pada pola perubahan historis harga beras</li>
-                  <li>Hasil prediksi dibulatkan hingga 3 angka desimal untuk akurasi yang lebih baik</li>
-                  <li>Model mempertimbangkan perubahan harga harian untuk menghasilkan prediksi yang lebih detail</li>
+                <h3 className="text-lg font-semibold">4. Prediksi Harga Hari Berikutnya</h3>
+                <p className=" mt-1">Prediksi harga untuk hari ke-mendatang dihitung dengan rumus barisan geometri:</p>
+                <div className="bg-secondary/50 p-4 rounded-md mt-2">
+                  <p className="font-mono">Harga Prediksi ke-k = Harga Terakhir × r^k</p>
+                </div>
+                <p className="text-sm  mt-2">
+                  Di mana:
+                  <br />
+                  - Harga Terakhir adalah harga pada hari terakhir data historis
+                  <br />
+                  - r adalah rata-rata rasio pertumbuhan harian
+                  <br />- k adalah jumlah hari setelah data terakhir yang ingin diprediksi
+                </p>
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold">5. Karakteristik Model</h3>
+                <ul className="list-disc list-inside  mt-1 space-y-2">
+                  <li>Model ini mengasumsikan pertumbuhan harga mengikuti pola geometri (rasio tetap setiap hari).</li>
+                  <li>Prediksi sangat bergantung pada pola pertumbuhan historis harga beras.</li>
+                  <li>Hasil prediksi dibulatkan hingga 3 angka desimal untuk akurasi yang lebih baik.</li>
+                  <li>Model cocok untuk tren harga yang cenderung naik/turun secara proporsional.</li>
                 </ul>
               </div>
             </div>

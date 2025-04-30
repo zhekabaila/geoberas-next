@@ -61,16 +61,18 @@ export default function BarChartComponent({ data, jenis, start, end, fetching }:
             </Bar>
           </BarChart>
         </ChartContainer>
-        <div className="flex justify-center items-center mt-10 gap-10">
-          <div className="flex flex-col items-center justify-center">
-            <div className="w-8 h-3" style={{ backgroundColor: DATA_COLOR }} />
-            <p className="text-sm text-muted-foreground">Data</p>
+        {data.some((item) => item.type === 'prediksi') && (
+          <div className="flex justify-center items-center mt-10 gap-10">
+            <div className="flex flex-col items-center justify-center">
+              <div className="w-8 h-3" style={{ backgroundColor: DATA_COLOR }} />
+              <p className="text-sm text-muted-foreground">Data</p>
+            </div>
+            <div className="flex flex-col items-center justify-center">
+              <div className="w-8 h-3" style={{ backgroundColor: PREDICTION_COLOR }} />
+              <p className="text-sm text-muted-foreground">Prediksi</p>
+            </div>
           </div>
-          <div className="flex flex-col items-center justify-center">
-            <div className="w-8 h-3" style={{ backgroundColor: PREDICTION_COLOR }} />
-            <p className="text-sm text-muted-foreground">Prediksi</p>
-          </div>
-        </div>
+        )}
       </CardContent>
       {/* <CardFooter className="flex-col items-start gap-2 text-sm">
         <div className="flex gap-2 font-medium leading-none">

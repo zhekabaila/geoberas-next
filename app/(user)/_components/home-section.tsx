@@ -1,3 +1,5 @@
+'use client'
+
 import BarChartComponent from './bar-chart'
 import { useMediumStore } from '../_stores/use-medium-store'
 import { usePremiumStore } from '../_stores/use-premium-store'
@@ -86,6 +88,7 @@ const HomeSection = ({ mediumFetching, premiumFetching }: IProps) => {
       from: new Date(pStart),
       to: new Date(pEnd)
     })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const prediksiHargaBeras = (hargaBeras: Data[], targetDate: Date, jenisBeras: 'medium' | 'premium') => {

@@ -1,5 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client'
+
 import { Fetcher } from '@/services/fetcher'
 import { useMediumStore } from '../_stores/use-medium-store'
 import { toast } from 'sonner'
@@ -84,6 +84,7 @@ const HomeLayout = () => {
   useEffect(() => {
     fetchMedium()
     fetchPremium()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pStart, pEnd])
 
   const handleClick = (i: number) => {

@@ -92,87 +92,114 @@ const HomeLayout = () => {
   }
 
   return (
-    <main className="h-screen overflow-hidden w-screen">
-      <section className="flex h-full">
-        {MENU_HOME.map((menu, i) => (
-          <div key={i} className={cn('flex', active === i ? 'flex-1' : 'flex-none')}>
-            <motion.button
-              type="button"
-              onClick={() => handleClick(i)}
-              className={cn(
-                'flex items-end h-full justify-center py-10 w-20 max-w-[112px] border-r-4 border-x-black',
-                active === i ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground',
-                i - 1 === active && 'border-x-4'
-              )}
-              whileTap={{ scale: 0.98 }}
-              animate={{
-                scale: active === i ? 1.02 : 1,
-                boxShadow: active === i ? '0 10px 15px -3px rgba(0, 0, 0, 0.1)' : 'none'
-              }}
-              transition={{ duration: 0.2 }}>
-              <motion.div
-                className="flex items-center justify-center gap-4 text-3xl font-bold"
-                style={{ writingMode: 'sideways-lr' }}
+    <>
+      <main className="hidden md:block h-screen overflow-hidden w-screen">
+        <section className="flex h-full">
+          {MENU_HOME.map((menu, i) => (
+            <div key={i} className={cn('flex', active === i ? 'flex-1' : 'flex-none')}>
+              <motion.button
+                type="button"
+                onClick={() => handleClick(i)}
+                className={cn(
+                  'flex items-end h-full justify-center py-10 w-20 max-w-[112px] border-r-4 border-x-black',
+                  active === i ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground',
+                  i - 1 === active && 'border-x-4'
+                )}
+                whileTap={{ scale: 0.98 }}
                 animate={{
-                  color: active === i ? 'var(--primary-foreground)' : 'var(--secondary-foreground)'
-                }}>
-                {active === i && <ArrowBigUp className="w-8 h-8" />}
-                {menu.name}
-              </motion.div>
-            </motion.button>
-            <AnimatePresence mode="wait">
-              {active === i && (
+                  scale: active === i ? 1.02 : 1,
+                  boxShadow: active === i ? '0 10px 15px -3px rgba(0, 0, 0, 0.1)' : 'none'
+                }}
+                transition={{ duration: 0.2 }}>
                 <motion.div
-                  initial={{ width: 0, opacity: 0 }}
+                  className="flex items-center justify-center gap-4 text-3xl font-bold"
+                  style={{ writingMode: 'sideways-lr' }}
                   animate={{
-                    width: 'auto',
-                    opacity: 1,
-                    transition: {
-                      width: {
-                        duration: 1
-                      },
-                      opacity: {
-                        duration: 0.5,
-                        delay: 0.2
-                      }
-                    }
-                  }}
-                  exit={{
-                    width: 0,
-                    opacity: 0,
-                    transition: {
-                      width: {
-                        duration: 1
-                      },
-                      opacity: {
-                        duration: 0.0
-                      }
-                    }
-                  }}
-                  className="flex-1 bg-background overflow-hidden">
-                  <motion.div
-                    className="h-full w-full"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{
-                      delay: 0.4,
-                      duration: 0.5
-                    }}>
-                    {menu.section === 'home' && (
-                      <HomeSection mediumFetching={mediumFetching} premiumFetching={premiumFetching} />
-                    )}
-                    {menu.section === 'member' && <MemberSection />}
-                    {menu.section === 'technology' && <TechnologySection />}
-                    {menu.section === 'calculator' && <CalculatorSection />}
-                    {menu.section === 'other-projects' && <OtherProjectSection />}
-                  </motion.div>
+                    color: active === i ? 'var(--primary-foreground)' : 'var(--secondary-foreground)'
+                  }}>
+                  {active === i && <ArrowBigUp className="w-8 h-8" />}
+                  {menu.name}
                 </motion.div>
+              </motion.button>
+              <AnimatePresence mode="wait">
+                {active === i && (
+                  <motion.div
+                    initial={{ width: 0, opacity: 0 }}
+                    animate={{
+                      width: 'auto',
+                      opacity: 1,
+                      transition: {
+                        width: {
+                          duration: 1
+                        },
+                        opacity: {
+                          duration: 0.5,
+                          delay: 0.2
+                        }
+                      }
+                    }}
+                    exit={{
+                      width: 0,
+                      opacity: 0,
+                      transition: {
+                        width: {
+                          duration: 1
+                        },
+                        opacity: {
+                          duration: 0.0
+                        }
+                      }
+                    }}
+                    className="flex-1 bg-background overflow-hidden">
+                    <motion.div
+                      className="h-full w-full"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{
+                        delay: 0.4,
+                        duration: 0.5
+                      }}>
+                      {menu.section === 'home' && (
+                        <HomeSection mediumFetching={mediumFetching} premiumFetching={premiumFetching} />
+                      )}
+                      {menu.section === 'member' && <MemberSection />}
+                      {menu.section === 'technology' && <TechnologySection />}
+                      {menu.section === 'calculator' && <CalculatorSection />}
+                      {menu.section === 'other-projects' && <OtherProjectSection />}
+                    </motion.div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          ))}
+        </section>
+      </main>
+      <main className="block md:hidden">
+        <div className="flex flex-col h-full min-h-screen">
+          {MENU_HOME.map((menu, i) => (
+            <>
+              <button
+                onClick={() => handleClick(i)}
+                key={i}
+                className="flex items-center gap-4 text-xl font-bold p-3 border-b-2 border-b-black">
+                {menu.name}
+              </button>
+              {active === i && (
+                <div className="flex-1">
+                  {menu.section === 'home' && (
+                    <HomeSection mediumFetching={mediumFetching} premiumFetching={premiumFetching} />
+                  )}
+                  {menu.section === 'member' && <MemberSection />}
+                  {menu.section === 'technology' && <TechnologySection />}
+                  {menu.section === 'calculator' && <CalculatorSection />}
+                  {menu.section === 'other-projects' && <OtherProjectSection />}
+                </div>
               )}
-            </AnimatePresence>
-          </div>
-        ))}
-      </section>
-    </main>
+            </>
+          ))}
+        </div>
+      </main>
+    </>
   )
 }
 

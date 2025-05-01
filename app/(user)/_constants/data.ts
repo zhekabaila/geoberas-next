@@ -24,9 +24,9 @@ export const MENU_HOME = [
     name: 'Technology',
     section: 'technology'
   },
-  {
-    id: 6,
-    name: 'Other Projects',
-    section: 'other-projects'
-  }
+  // {
+  //   id: 6,
+  //   name: 'Other Projects',
+  //   section: 'other-projects'
+  // }
 ]

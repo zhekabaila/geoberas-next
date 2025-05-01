@@ -296,7 +296,7 @@ const HomeSection = ({ mediumFetching, premiumFetching }: IProps) => {
               <BarChartComponent data={premium} jenis="Premium" start={pStart} end={pEnd} fetching={premiumFetching} />
             </TabsContent>
           </Tabs>
-          <div className="mt-5 bg-background rounded-md p-6">
+          <div className="mt-5 bg-background rounded-md p-0 md:p-6">
             <h2 className="text-xl font-bold">Metodologi Perhitungan Prediksi</h2>
             <p className="text-base  mt-2">
               Prediksi harga beras di Indonesia pada aplikasi ini menggunakan metode{' '}

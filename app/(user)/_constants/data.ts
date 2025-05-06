@@ -1,14 +1,14 @@
 export const MENU_HOME = [
   {
     id: 1,
-    name: 'Home',
-    section: 'home'
+    name: 'Beranda',
+    section: 'beranda'
   },
-  // {
-  //   id: 2,
-  //   name: 'Calculator',
-  //   section: 'calculator'
-  // },
+  {
+    id: 2,
+    name: 'Kalkulator',
+    section: 'kalkulator'
+  },
   // {
   //   id: 3,
   //   name: 'About',
@@ -16,13 +16,13 @@ export const MENU_HOME = [
   // },
   {
     id: 4,
-    name: 'Member',
-    section: 'member'
+    name: 'Anggota',
+    section: 'anggota'
   },
   {
     id: 5,
-    name: 'Technology',
-    section: 'technology'
+    name: 'Teknologi',
+    section: 'teknologi'
   },
   // {
   //   id: 6,

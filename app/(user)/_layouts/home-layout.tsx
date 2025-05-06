@@ -3,14 +3,14 @@
 import { Fetcher } from '@/services/fetcher'
 import { useMediumStore } from '../_stores/use-medium-store'
 import { toast } from 'sonner'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { usePremiumStore } from '../_stores/use-premium-store'
 import { cn } from '@/lib/utils'
 import { motion, AnimatePresence } from 'framer-motion'
 import { MENU_HOME } from '../_constants/data'
 import dynamic from 'next/dynamic'
 import { ArrowBigUp } from 'lucide-react'
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 const HomeSection = dynamic(() => import('../_components/home-section'), { ssr: false })
 const MemberSection = dynamic(() => import('../_components/member-section'), { ssr: false })
@@ -19,7 +19,6 @@ const CalculatorSection = dynamic(() => import('../_components/calculator-sectio
 const OtherProjectSection = dynamic(() => import('../_components/other-project-section'), { ssr: false })
 
 const HomeLayout = () => {
-  const [active, setActive] = useState(0)
   const { setMedium, loading, setLoading, fetching: mediumFetching, setFetching: setMediumFetching } = useMediumStore()
   const {
     setPremium,
@@ -35,6 +34,7 @@ const HomeLayout = () => {
   // const cEnd = searchParams.get('c_end') || '2025-03-30'
 
   const pStart = searchParams.get('p_start') || '2025-03-01'
+  const active = searchParams.get('active') ? parseInt(searchParams.get('active')!) : 0
   const pEnd = searchParams.get('p_end') || '2025-03-30'
 
   const fetchMedium = () => {
@@ -87,8 +87,14 @@ const HomeLayout = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pStart, pEnd])
 
+  const navigate = useRouter()
+
   const handleClick = (i: number) => {
-    setActive(i)
+    const params = new URLSearchParams(searchParams.toString())
+
+    params.set('active', i.toString())
+
+    navigate.replace(`?${params.toString()}`, { scroll: false })
   }
 
   return (
@@ -159,12 +165,12 @@ const HomeLayout = () => {
                         delay: 0.4,
                         duration: 0.5
                       }}>
-                      {menu.section === 'home' && (
-                        <HomeSection mediumFetching={mediumFetching} premiumFetching={premiumFetching} />
+                      {menu.section === 'beranda' && <HomeSection />}
+                      {menu.section === 'anggota' && <MemberSection />}
+                      {menu.section === 'teknologi' && <TechnologySection />}
+                      {menu.section === 'kalkulator' && (
+                        <CalculatorSection mediumFetching={mediumFetching} premiumFetching={premiumFetching} />
                       )}
-                      {menu.section === 'member' && <MemberSection />}
-                      {menu.section === 'technology' && <TechnologySection />}
-                      {menu.section === 'calculator' && <CalculatorSection />}
                       {menu.section === 'other-projects' && <OtherProjectSection />}
                     </motion.div>
                   </motion.div>
@@ -186,12 +192,12 @@ const HomeLayout = () => {
               </button>
               {active === i && (
                 <div className="flex-1">
-                  {menu.section === 'home' && (
-                    <HomeSection mediumFetching={mediumFetching} premiumFetching={premiumFetching} />
+                  {menu.section === 'beranda' && <HomeSection />}
+                  {menu.section === 'anggota' && <MemberSection />}
+                  {menu.section === 'teknologi' && <TechnologySection />}
+                  {menu.section === 'kalkulator' && (
+                    <CalculatorSection mediumFetching={mediumFetching} premiumFetching={premiumFetching} />
                   )}
-                  {menu.section === 'member' && <MemberSection />}
-                  {menu.section === 'technology' && <TechnologySection />}
-                  {menu.section === 'calculator' && <CalculatorSection />}
                   {menu.section === 'other-projects' && <OtherProjectSection />}
                 </div>
               )}

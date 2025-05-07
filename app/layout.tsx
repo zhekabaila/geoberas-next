@@ -17,8 +17,9 @@ const geistMono = localFont({
 })
 
 export const metadata: Metadata = {
-  title: 'Starting Template',
-  description: 'Starting Template'
+  title: 'Geoberas | Prediksi Harga Beras di Indonesia',
+  description:
+    'Analisis prediksi harga beras di indonesia pada tahun 2025 menggunakan model matematika. Dapatkan wawasan terbaru mengenai tren harga beras di Indonesia. Prediksi ini membantu Anda dalam mengambil keputusan yang lebih baik, baik untuk kebutuhan rumah tangga maupun bisnis. Data yang disajikan diolah menggunakan metode matematis terkini untuk hasil yang lebih akurat.'
 }
 
 export default function RootLayout({
@@ -29,7 +30,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+        <ThemeProvider attribute="class" defaultTheme="light">
           <TooltipProvider>{children}</TooltipProvider>
           <Toaster richColors />
         </ThemeProvider>

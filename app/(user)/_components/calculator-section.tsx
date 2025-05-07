@@ -1,29 +1,49 @@
 'use client'
-import BarChartComponent from './bar-chart'
-import { useMediumStore } from '../_stores/use-medium-store'
+import { Medium, useMediumStore } from '../_stores/use-medium-store'
 import { usePremiumStore } from '../_stores/use-premium-store'
-import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Button } from '@/components/ui/button'
 import { DateRangePicker } from '@/components/core/date-range-picker'
 import { DateRange } from 'react-day-picker'
 import { format } from 'date-fns'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { Data } from '../types'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { DatePicker } from '@/components/core/date-picker'
+import Chart from 'chart.js/auto'
+import type { ChartConfiguration } from 'chart.js'
+import BarChartComponent from './bar-chart'
+import { toast } from 'sonner'
+import { Table, TableHead, TableRow, TableHeader, TableCell, TableBody } from '@/components/ui/table'
 
 interface IProps {
   mediumFetching: boolean
   premiumFetching: boolean
+  allMedium: Data[]
+  allPremium: Data[]
 }
 
-const CalculatorSection = ({ mediumFetching, premiumFetching }: IProps) => {
-  const { medium, setPrediksi: setMediumPrediksi } = useMediumStore()
-  const { premium, setPrediksi: setPremiumPrediksi } = usePremiumStore()
+const CalculatorSection = ({ mediumFetching, premiumFetching, allMedium, allPremium }: IProps) => {
+  const {
+    medium,
+    setPrediksi: setMediumPrediksi,
+    prediksiMedium,
+    setPrediksiNull: setMediumPrediksiNull,
+    removePrediksiFromData: removeMediumPrediksiFromData
+  } = useMediumStore()
+  const {
+    premium,
+    setPrediksi: setPremiumPrediksi,
+    prediksiPremium,
+    setPrediksiNull: setPremiumPrediksiNull,
+    removePrediksiFromData: removePremiumPrediksiFromData
+  } = usePremiumStore()
+
+  console.log(mediumFetching)
+  console.log(premiumFetching)
 
   const [prediksiPayload, setPrediksiPayload] = useState<{
     jenis: 'medium' | 'premium'
@@ -35,51 +55,118 @@ const CalculatorSection = ({ mediumFetching, premiumFetching }: IProps) => {
 
   const [activeTab, setActiveTab] = useState<'medium' | 'premium'>('medium')
 
-  const [prediksiDateRange, setPrediksiDateRange] = useState<DateRange | undefined>({
+  const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: undefined,
     to: undefined
   })
 
   const searchParams = useSearchParams()
 
-  const pStart = searchParams.get('p_start') || '2025-03-01'
-  const pEnd = searchParams.get('p_end') || '2025-03-30'
+  const cStart = searchParams.get('c_start') || '2025-03-01'
+  const cEnd = searchParams.get('c_end') || '2025-03-30'
 
   const navigate = useRouter()
 
+  const chartRef = useRef<HTMLCanvasElement>(null)
+  const chartInstance = useRef<Chart | null>(null)
+
   const handlePrediksiDateChange = (dateRange?: DateRange) => {
-    setPrediksiDateRange(dateRange)
+    setDateRange(dateRange)
   }
 
   const handleFilterPrediksi = (dateRange?: DateRange) => {
     const params = new URLSearchParams(searchParams.toString())
 
-    params.set('p_start', dateRange?.from ? format(dateRange.from, 'yyyy-MM-dd') : '')
-    params.set('p_end', dateRange?.to ? format(dateRange.to, 'yyyy-MM-dd') : '')
+    params.set('c_start', dateRange?.from ? format(dateRange.from, 'yyyy-MM-dd') : '')
+    params.set('c_end', dateRange?.to ? format(dateRange.to, 'yyyy-MM-dd') : '')
 
     navigate.replace(`?${params.toString()}`, { scroll: false })
   }
 
   useEffect(() => {
-    setPrediksiDateRange({
-      from: new Date(pStart),
-      to: new Date(pEnd)
+    setDateRange({
+      from: new Date(cStart),
+      to: new Date(cEnd)
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  function prediksiHargaBerasGeometric(hargaBeras: Data[], targetDate: Date, jenisBeras: 'medium' | 'premium') {
-    if (hargaBeras.length < 2) {
-      throw new Error('Data historis minimal harus 2 entri.')
+  useEffect(() => {
+    if (chartRef.current) {
+      // Destroy chart sebelumnya jika ada
+      if (chartInstance.current) {
+        chartInstance.current.destroy()
+      }
+
+      const ctx = chartRef.current.getContext('2d')
+
+      if (ctx) {
+        // Pilih data berdasarkan tab aktif
+        const currentData = activeTab === 'medium' ? medium : premium
+        const labels = currentData.map((item) => item.date)
+        const data = currentData.map((item) => item.price)
+
+        const backgroundColor = currentData.map((item) => (item.type === 'prediksi' ? '#c5c0b440' : '#c5c0b4'))
+        const borderColor = currentData.map((item) => (item.type === 'prediksi' ? '#c5c0b4' : '#c5c0b4'))
+
+        const chartData = {
+          labels: labels,
+          datasets: [
+            {
+              label: `Harga Beras ${activeTab === 'medium' ? 'Medium' : 'Premium'}`,
+              data: data,
+              backgroundColor: backgroundColor,
+              borderColor: borderColor,
+              borderWidth: 1
+            }
+          ]
+        }
+
+        const config: ChartConfiguration = {
+          type: 'bar',
+          data: chartData,
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              y: {
+                beginAtZero: false
+              }
+            },
+            plugins: {
+              legend: {
+                display: false
+              }
+            }
+          }
+        }
+
+        chartInstance.current = new Chart(ctx, config)
+      }
     }
 
-    // Hitung rata-rata rasio pertumbuhan harian
+    // Cleanup function
+    return () => {
+      if (chartInstance.current) {
+        chartInstance.current.destroy()
+      }
+    }
+  }, [medium, premium, activeTab, prediksiMedium, prediksiPremium]) // Tambahkan premium ke dependencies
+
+  function prediksiHargaBerasGeometric(targetDate: Date, jenisBeras: 'medium' | 'premium') {
+    const actualData = jenisBeras === 'medium' ? allMedium : allPremium
+
+    if (!actualData || actualData.length < 2) {
+      toast.error('Data historis minimal harus 2 entri.')
+      return
+    }
+
     let totalRasio = 0
     let count = 0
 
-    for (let i = 1; i < hargaBeras.length; i++) {
-      const hargaHariIni = hargaBeras[i].price
-      const hargaSebelumnya = hargaBeras[i - 1].price
+    for (let i = 1; i < actualData.length; i++) {
+      const hargaHariIni = actualData[i].price
+      const hargaSebelumnya = actualData[i - 1].price
       const rasio = hargaHariIni / hargaSebelumnya
       totalRasio += rasio
       count++
@@ -88,11 +175,11 @@ const CalculatorSection = ({ mediumFetching, premiumFetching }: IProps) => {
     const rataRasio = totalRasio / count
 
     // Ambil harga terakhir dan tanggal terakhir dari data historis
-    const hargaTerakhir = hargaBeras[hargaBeras.length - 1].price
-    const tanggalTerakhir = new Date(hargaBeras[hargaBeras.length - 1].date)
+    const hargaTerakhir = actualData[actualData.length - 1].price
+    const tanggalTerakhir = new Date(actualData[actualData.length - 1].date)
     const tanggalAkhir = new Date(targetDate)
 
-    const hasilPrediksi = []
+    const hasilPrediksi: Medium[] = []
 
     let index = 1
     const tanggal = new Date(tanggalTerakhir)
@@ -111,21 +198,29 @@ const CalculatorSection = ({ mediumFetching, premiumFetching }: IProps) => {
     }
 
     if (jenisBeras === 'medium') {
+      if (!!prediksiMedium) {
+        setMediumPrediksiNull()
+        removeMediumPrediksiFromData()
+      }
       setMediumPrediksi(hasilPrediksi)
       setActiveTab('medium')
     } else {
+      if (!!prediksiPremium) {
+        setPremiumPrediksiNull()
+        removePremiumPrediksiFromData()
+      }
       setPremiumPrediksi(hasilPrediksi)
       setActiveTab('premium')
     }
   }
 
   return (
-    <ScrollArea className="h-[77vh] md:h-screen  overflow-y-scroll">
+    <div className="h-[77vh] md:h-screen overflow-y-scroll">
       <div className="mx-4 mt-4 mb-0 md:m-20 space-y-10">
         <section id="prediksi">
           <h2 className="text-lg md:text-xl font-bold mb-5">Lihat Prediksi Harga Beras</h2>
           <Tabs value={activeTab}>
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-3">
               <TabsList className="w-fit md:w-auto">
                 <TabsTrigger value="medium" onClick={() => setActiveTab('medium')}>
                   Medium
@@ -139,11 +234,11 @@ const CalculatorSection = ({ mediumFetching, premiumFetching }: IProps) => {
                   <DateRangePicker
                     disableFutureDate
                     align="end"
-                    selected={prediksiDateRange}
+                    selected={dateRange}
                     onDateChange={handlePrediksiDateChange}
                     className="w-full md:w-auto"
                   />
-                  <Button variant="outline" onClick={() => handleFilterPrediksi(prediksiDateRange)}>
+                  <Button variant="outline" onClick={() => handleFilterPrediksi(dateRange)}>
                     Filter
                   </Button>
                 </div>
@@ -179,13 +274,7 @@ const CalculatorSection = ({ mediumFetching, premiumFetching }: IProps) => {
                       <div className="flex flex-col gap-2">
                         <Button
                           variant="outline"
-                          onClick={() =>
-                            prediksiHargaBerasGeometric(
-                              prediksiPayload.jenis === 'medium' ? medium : premium,
-                              prediksiPayload.tanggal!,
-                              prediksiPayload.jenis
-                            )
-                          }>
+                          onClick={() => prediksiHargaBerasGeometric(prediksiPayload.tanggal!, prediksiPayload.jenis)}>
                           Prediksi
                         </Button>
                       </div>
@@ -194,12 +283,72 @@ const CalculatorSection = ({ mediumFetching, premiumFetching }: IProps) => {
                 </Popover>
               </div>
             </div>
-            <TabsContent value="medium">
-              <BarChartComponent data={medium} jenis="Medium" start={pStart} end={pEnd} fetching={mediumFetching} />
-            </TabsContent>
-            <TabsContent value="premium">
-              <BarChartComponent data={premium} jenis="Premium" start={pStart} end={pEnd} fetching={premiumFetching} />
-            </TabsContent>
+            {activeTab === 'medium' && (
+              <>
+                <BarChartComponent chartRef={chartRef} isPrediksi={!!prediksiMedium} />
+                {!!prediksiMedium && (
+                  <div className="bg-primary p-4 rounded-md mt-2">
+                    <div className="mb-5">
+                      <h3 className="text-base font-medium">Prediksi Harga Beras Medium</h3>
+                      <p className="text-xs">
+                        {format(new Date(cStart), 'dd MMMM yyyy')} - {format(new Date(cEnd), 'dd MMMM yyyy')}
+                      </p>
+                    </div>
+                    <div className="max-h-[350px] overflow-y-scroll">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Tanggal</TableHead>
+                            <TableHead>Harga</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {prediksiMedium?.map((item) => (
+                            <TableRow key={item.date}>
+                              <TableCell>{item.date}</TableCell>
+                              <TableCell>{item.price}</TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+            {activeTab === 'premium' && (
+              <>
+                <BarChartComponent chartRef={chartRef} isPrediksi={!!prediksiPremium} />
+                {!!prediksiPremium && (
+                  <div className="bg-primary p-4 rounded-md mt-2">
+                    <div className="mb-5">
+                      <h3 className="text-base font-medium">Prediksi Harga Beras Premium</h3>
+                      <p className="text-xs">
+                        {format(new Date(cStart), 'dd MMMM yyyy')} - {format(new Date(cEnd), 'dd MMMM yyyy')}
+                      </p>
+                    </div>
+                    <div className="max-h-[350px] overflow-y-scroll">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Tanggal</TableHead>
+                            <TableHead>Harga</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {prediksiPremium?.map((item) => (
+                            <TableRow key={item.date}>
+                              <TableCell>{item.date}</TableCell>
+                              <TableCell>{item.price}</TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
           </Tabs>
           <div className="mt-5 bg-background rounded-md p-0 md:p-6">
             <h2 className="text-xl font-bold">Metodologi Perhitungan Prediksi</h2>
@@ -259,9 +408,8 @@ const CalculatorSection = ({ mediumFetching, premiumFetching }: IProps) => {
             </div>
           </div>
         </section>
-        <ScrollBar orientation="vertical" />
       </div>
-    </ScrollArea>
+    </div>
   )
 }
 

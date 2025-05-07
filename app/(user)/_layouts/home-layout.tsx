@@ -3,7 +3,7 @@
 import { Fetcher } from '@/services/fetcher'
 import { useMediumStore } from '../_stores/use-medium-store'
 import { toast } from 'sonner'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { usePremiumStore } from '../_stores/use-premium-store'
 import { cn } from '@/lib/utils'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -11,6 +11,7 @@ import { MENU_HOME } from '../_constants/data'
 import dynamic from 'next/dynamic'
 import { ArrowBigUp } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { Data } from '../types'
 
 const HomeSection = dynamic(() => import('../_components/home-section'), { ssr: false })
 const MemberSection = dynamic(() => import('../_components/member-section'), { ssr: false })
@@ -19,6 +20,9 @@ const CalculatorSection = dynamic(() => import('../_components/calculator-sectio
 const OtherProjectSection = dynamic(() => import('../_components/other-project-section'), { ssr: false })
 
 const HomeLayout = () => {
+  const [allMedium, setAllMedium] = useState<Data[]>([])
+  const [allPremium, setAllPremium] = useState<Data[]>([])
+
   const { setMedium, loading, setLoading, fetching: mediumFetching, setFetching: setMediumFetching } = useMediumStore()
   const {
     setPremium,
@@ -33,9 +37,9 @@ const HomeLayout = () => {
   // const cStart = searchParams.get('c_start') || '2025-03-01'
   // const cEnd = searchParams.get('c_end') || '2025-03-30'
 
-  const pStart = searchParams.get('p_start') || '2025-03-01'
+  const cStart = searchParams.get('c_start') || '2025-03-01'
   const active = searchParams.get('active') ? parseInt(searchParams.get('active')!) : 0
-  const pEnd = searchParams.get('p_end') || '2025-03-30'
+  const cEnd = searchParams.get('c_end') || '2025-03-30'
 
   const fetchMedium = () => {
     if (!loading) setMediumFetching(true)
@@ -43,8 +47,8 @@ const HomeLayout = () => {
     Fetcher({
       url: '/medium',
       params: {
-        start: pStart,
-        end: pEnd
+        start: cStart,
+        end: cEnd
       },
       onSuccess({ data }) {
         setMedium(data)
@@ -65,8 +69,8 @@ const HomeLayout = () => {
     Fetcher({
       url: '/premium',
       params: {
-        start: pStart,
-        end: pEnd
+        start: cStart,
+        end: cEnd
       },
       onSuccess({ data }) {
         setPremium(data)
@@ -81,11 +85,49 @@ const HomeLayout = () => {
     })
   }
 
+  const fetchAllPremium = () => {
+    if (!premiumLoading) setPremiumFetching(true)
+    Fetcher({
+      url: '/premium',
+      onSuccess({ data }) {
+        setAllPremium(data)
+      },
+      onError(error) {
+        toast.error(error)
+      },
+      onFinally() {
+        if (premiumLoading) setPremiumLoading(false)
+        else setPremiumFetching(false)
+      }
+    })
+  }
+
+  const fetchAllMedium = () => {
+    if (!loading) setMediumFetching(true)
+    Fetcher({
+      url: '/medium',
+      onSuccess({ data }) {
+        setAllMedium(data)
+      },
+      onError(error) {
+        toast.error(error)
+      },
+      onFinally() {
+        if (loading) setLoading(false)
+        else setMediumFetching(false)
+      }
+    })
+  }
+
   useEffect(() => {
     fetchMedium()
     fetchPremium()
+
+    fetchAllPremium()
+    fetchAllMedium()
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pStart, pEnd])
+  }, [cStart, cEnd])
 
   const navigate = useRouter()
 
@@ -169,7 +211,12 @@ const HomeLayout = () => {
                       {menu.section === 'anggota' && <MemberSection />}
                       {menu.section === 'teknologi' && <TechnologySection />}
                       {menu.section === 'kalkulator' && (
-                        <CalculatorSection mediumFetching={mediumFetching} premiumFetching={premiumFetching} />
+                        <CalculatorSection
+                          mediumFetching={mediumFetching}
+                          premiumFetching={premiumFetching}
+                          allMedium={allMedium}
+                          allPremium={allPremium}
+                        />
                       )}
                       {menu.section === 'other-projects' && <OtherProjectSection />}
                     </motion.div>

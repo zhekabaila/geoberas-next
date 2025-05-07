@@ -1,8 +1,12 @@
 'use client'
 import { Button } from '@/components/ui/button'
 import Image from 'next/image'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 const HomeSection = () => {
+  const searchParams = useSearchParams()
+  const navigate = useRouter()
+
   return (
     <div className="h-[77vh] md:h-screen  overflow-y-scroll">
       <div className="mx-4 mt-4 mb-0 md:m-20 space-y-10">
@@ -26,7 +30,15 @@ const HomeSection = () => {
               keputusan yang lebih baik, baik untuk kebutuhan rumah tangga maupun bisnis. Data yang disajikan diolah
               menggunakan metode matematis terkini untuk hasil yang lebih akurat.
             </p>
-            <Button className="mt-3">
+            <Button
+              className="mt-3"
+              onClick={() => {
+                const params = new URLSearchParams(searchParams.toString())
+
+                params.set('active', '1')
+
+                navigate.replace(`?${params.toString()}`, { scroll: false })
+              }}>
               <a href="#grafik">Lihat Prediksi</a>
             </Button>
           </div>

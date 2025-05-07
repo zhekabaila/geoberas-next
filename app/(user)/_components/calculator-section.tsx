@@ -17,7 +17,8 @@ import Chart from 'chart.js/auto'
 import type { ChartConfiguration } from 'chart.js'
 import BarChartComponent from './bar-chart'
 import { toast } from 'sonner'
-import { Table, TableHead, TableRow, TableHeader, TableCell, TableBody } from '@/components/ui/table'
+import PerhitunganMedium from './perhitungan-medium'
+import PerhitunganPremium from './perhitungan-premium'
 
 interface IProps {
   mediumFetching: boolean
@@ -42,15 +43,14 @@ const CalculatorSection = ({ mediumFetching, premiumFetching, allMedium, allPrem
     removePrediksiFromData: removePremiumPrediksiFromData
   } = usePremiumStore()
 
-  console.log(mediumFetching)
-  console.log(premiumFetching)
+  console.log(mediumFetching, premiumFetching)
 
   const [prediksiPayload, setPrediksiPayload] = useState<{
     jenis: 'medium' | 'premium'
     tanggal: Date | undefined
   }>({
     jenis: 'medium',
-    tanggal: undefined
+    tanggal: new Date()
   })
 
   const [activeTab, setActiveTab] = useState<'medium' | 'premium'>('medium')
@@ -62,8 +62,8 @@ const CalculatorSection = ({ mediumFetching, premiumFetching, allMedium, allPrem
 
   const searchParams = useSearchParams()
 
-  const cStart = searchParams.get('c_start') || '2025-03-01'
-  const cEnd = searchParams.get('c_end') || '2025-03-30'
+  const cStart = searchParams.get('c_start') || '2025-04-01'
+  const cEnd = searchParams.get('c_end') || '2025-04-17'
 
   const navigate = useRouter()
 
@@ -74,7 +74,7 @@ const CalculatorSection = ({ mediumFetching, premiumFetching, allMedium, allPrem
     setDateRange(dateRange)
   }
 
-  const handleFilterPrediksi = (dateRange?: DateRange) => {
+  const handleFilter = (dateRange?: DateRange) => {
     const params = new URLSearchParams(searchParams.toString())
 
     params.set('c_start', dateRange?.from ? format(dateRange.from, 'yyyy-MM-dd') : '')
@@ -106,8 +106,8 @@ const CalculatorSection = ({ mediumFetching, premiumFetching, allMedium, allPrem
         const labels = currentData.map((item) => item.date)
         const data = currentData.map((item) => item.price)
 
-        const backgroundColor = currentData.map((item) => (item.type === 'prediksi' ? '#c5c0b440' : '#c5c0b4'))
-        const borderColor = currentData.map((item) => (item.type === 'prediksi' ? '#c5c0b4' : '#c5c0b4'))
+        const backgroundColor = currentData.map((item) => (item.type === 'prediksi' ? '#667b99' : '#7c8755'))
+        const borderColor = currentData.map((item) => (item.type === 'prediksi' ? '#667b99' : '#7c8755'))
 
         const chartData = {
           labels: labels,
@@ -154,6 +154,11 @@ const CalculatorSection = ({ mediumFetching, premiumFetching, allMedium, allPrem
   }, [medium, premium, activeTab, prediksiMedium, prediksiPremium]) // Tambahkan premium ke dependencies
 
   function prediksiHargaBerasGeometric(targetDate: Date, jenisBeras: 'medium' | 'premium') {
+    if (targetDate <= new Date(jenisBeras === 'medium' ? '2025-04-17' : '2025-04-15')) {
+      toast.error(`Tanggal prediksi harus lebih dari ${jenisBeras === 'medium' ? '17 April 2025' : '15 April 2025'}`)
+      return
+    }
+
     const actualData = jenisBeras === 'medium' ? allMedium : allPremium
 
     if (!actualData || actualData.length < 2) {
@@ -237,20 +242,22 @@ const CalculatorSection = ({ mediumFetching, premiumFetching, allMedium, allPrem
                     selected={dateRange}
                     onDateChange={handlePrediksiDateChange}
                     className="w-full md:w-auto"
+                    inputclassName="bg-primary hover:bg-primary/80"
                   />
-                  <Button variant="outline" onClick={() => handleFilterPrediksi(dateRange)}>
+                  <Button variant="default" onClick={() => handleFilter(dateRange)}>
                     Filter
                   </Button>
                 </div>
                 <Popover>
                   <PopoverTrigger asChild>
-                    <Button variant="outline">Mulai Prediksi</Button>
+                    <Button variant="default">Mulai Prediksi</Button>
                   </PopoverTrigger>
                   <PopoverContent align="end">
                     <div className="flex flex-col gap-4">
                       <div className="flex flex-col gap-2">
                         <Label htmlFor="jenis">Pilih Jenis</Label>
                         <Select
+                          defaultValue={prediksiPayload.jenis}
                           onValueChange={(value) =>
                             setPrediksiPayload({ ...prediksiPayload, jenis: value as 'medium' | 'premium' })
                           }>
@@ -273,7 +280,7 @@ const CalculatorSection = ({ mediumFetching, premiumFetching, allMedium, allPrem
                       </div>
                       <div className="flex flex-col gap-2">
                         <Button
-                          variant="outline"
+                          variant="default"
                           onClick={() => prediksiHargaBerasGeometric(prediksiPayload.tanggal!, prediksiPayload.jenis)}>
                           Prediksi
                         </Button>
@@ -287,32 +294,9 @@ const CalculatorSection = ({ mediumFetching, premiumFetching, allMedium, allPrem
               <>
                 <BarChartComponent chartRef={chartRef} isPrediksi={!!prediksiMedium} />
                 {!!prediksiMedium && (
-                  <div className="bg-primary p-4 rounded-md mt-2">
-                    <div className="mb-5">
-                      <h3 className="text-base font-medium">Prediksi Harga Beras Medium</h3>
-                      <p className="text-xs">
-                        {format(new Date(cStart), 'dd MMMM yyyy')} - {format(new Date(cEnd), 'dd MMMM yyyy')}
-                      </p>
-                    </div>
-                    <div className="max-h-[350px] overflow-y-scroll">
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>Tanggal</TableHead>
-                            <TableHead>Harga</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {prediksiMedium?.map((item) => (
-                            <TableRow key={item.date}>
-                              <TableCell>{item.date}</TableCell>
-                              <TableCell>{item.price}</TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </div>
-                  </div>
+                  <>
+                    <PerhitunganMedium data={allMedium} targetDate={prediksiPayload.tanggal!} />
+                  </>
                 )}
               </>
             )}
@@ -320,93 +304,13 @@ const CalculatorSection = ({ mediumFetching, premiumFetching, allMedium, allPrem
               <>
                 <BarChartComponent chartRef={chartRef} isPrediksi={!!prediksiPremium} />
                 {!!prediksiPremium && (
-                  <div className="bg-primary p-4 rounded-md mt-2">
-                    <div className="mb-5">
-                      <h3 className="text-base font-medium">Prediksi Harga Beras Premium</h3>
-                      <p className="text-xs">
-                        {format(new Date(cStart), 'dd MMMM yyyy')} - {format(new Date(cEnd), 'dd MMMM yyyy')}
-                      </p>
-                    </div>
-                    <div className="max-h-[350px] overflow-y-scroll">
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>Tanggal</TableHead>
-                            <TableHead>Harga</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {prediksiPremium?.map((item) => (
-                            <TableRow key={item.date}>
-                              <TableCell>{item.date}</TableCell>
-                              <TableCell>{item.price}</TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </div>
-                  </div>
+                  <>
+                    <PerhitunganPremium data={allPremium} targetDate={prediksiPayload.tanggal!} />
+                  </>
                 )}
               </>
             )}
           </Tabs>
-          <div className="mt-5 bg-background rounded-md p-0 md:p-6">
-            <h2 className="text-xl font-bold">Metodologi Perhitungan Prediksi</h2>
-            <p className="text-base  mt-2">
-              Prediksi harga beras di Indonesia pada aplikasi ini menggunakan metode{' '}
-              <span className="font-semibold">barisan geometri</span> dengan langkah-langkah sebagai berikut:
-            </p>
-            <div className="mt-4 space-y-4">
-              <div>
-                <h3 className="text-lg font-semibold">1. Pengambilan Data Harga Harian</h3>
-                <p className=" mt-1">Ambil data harga beras harian dari data historis yang tersedia.</p>
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold">2. Hitung Rasio Pertumbuhan Harian</h3>
-                <p className=" mt-1">Hitung rasio pertumbuhan harian dengan rumus:</p>
-                <div className="bg-secondary/50 p-4 rounded-md mt-2">
-                  <p className="font-mono">Rasio-i = Harga hari ke-i / Harga hari ke-(i-1)</p>
-                </div>
-                <p className="text-sm  mt-2">Lakukan perhitungan ini untuk setiap hari dalam data (kecuali hari pertama).</p>
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold">3. Hitung Rata-rata Rasio Pertumbuhan</h3>
-                <p className=" mt-1">
-                  Setelah mendapatkan seluruh rasio harian, hitung rata-rata dari semua rasio tersebut dengan rumus:
-                </p>
-                <div className="bg-secondary/50 p-4 rounded-md mt-2">
-                  <p className="font-mono">r = (r₁ + r₂ + ... + rₙ) / n</p>
-                </div>
-                <p className="text-sm  mt-2">
-                  Di mana r₁, r₂, ..., rₙ adalah rasio pertumbuhan harian dan n adalah jumlah rasio yang dihitung.
-                </p>
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold">4. Prediksi Harga Hari Berikutnya</h3>
-                <p className=" mt-1">Prediksi harga untuk hari ke-mendatang dihitung dengan rumus barisan geometri:</p>
-                <div className="bg-secondary/50 p-4 rounded-md mt-2">
-                  <p className="font-mono">Harga Prediksi ke-k = Harga Terakhir × r^k</p>
-                </div>
-                <p className="text-sm  mt-2">
-                  Di mana:
-                  <br />
-                  - Harga Terakhir adalah harga pada hari terakhir data historis
-                  <br />
-                  - r adalah rata-rata rasio pertumbuhan harian
-                  <br />- k adalah jumlah hari setelah data terakhir yang ingin diprediksi
-                </p>
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold">5. Karakteristik Model</h3>
-                <ul className="list-disc list-inside  mt-1 space-y-2">
-                  <li>Model ini mengasumsikan pertumbuhan harga mengikuti pola geometri (rasio tetap setiap hari).</li>
-                  <li>Prediksi sangat bergantung pada pola pertumbuhan historis harga beras.</li>
-                  <li>Hasil prediksi dibulatkan hingga 3 angka desimal untuk akurasi yang lebih baik.</li>
-                  <li>Model cocok untuk tren harga yang cenderung naik/turun secara proporsional.</li>
-                </ul>
-              </div>
-            </div>
-          </div>
         </section>
       </div>
     </div>

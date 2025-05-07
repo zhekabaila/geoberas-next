@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { Data } from '../types'
 
-interface Premium extends Data {
+export interface Premium extends Data {
   type?: 'prediksi' | 'data'
 }
 

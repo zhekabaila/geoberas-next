@@ -34,12 +34,10 @@ const HomeLayout = () => {
 
   const searchParams = useSearchParams()
 
-  // const cStart = searchParams.get('c_start') || '2025-03-01'
-  // const cEnd = searchParams.get('c_end') || '2025-03-30'
-
-  const cStart = searchParams.get('c_start') || '2025-03-01'
   const active = searchParams.get('active') ? parseInt(searchParams.get('active')!) : 0
-  const cEnd = searchParams.get('c_end') || '2025-03-30'
+
+  const cStart = searchParams.get('c_start') || '2025-04-01'
+  const cEnd = searchParams.get('c_end') || '2025-04-17'
 
   const fetchMedium = () => {
     if (!loading) setMediumFetching(true)

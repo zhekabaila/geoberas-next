@@ -243,7 +243,12 @@ const HomeLayout = () => {
                   {menu.section === 'anggota' && <MemberSection />}
                   {menu.section === 'teknologi' && <TechnologySection />}
                   {menu.section === 'kalkulator' && (
-                    <CalculatorSection mediumFetching={mediumFetching} premiumFetching={premiumFetching} />
+                    <CalculatorSection
+                      mediumFetching={mediumFetching}
+                      premiumFetching={premiumFetching}
+                      allMedium={allMedium}
+                      allPremium={allPremium}
+                    />
                   )}
                   {menu.section === 'other-projects' && <OtherProjectSection />}
                 </div>

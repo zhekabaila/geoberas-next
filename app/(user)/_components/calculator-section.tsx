@@ -220,8 +220,8 @@ const CalculatorSection = ({ mediumFetching, premiumFetching, allMedium, allPrem
   }
 
   return (
-    <div className="h-[77vh] md:h-screen overflow-y-scroll">
-      <div className="mx-4 mt-4 mb-0 md:m-20 space-y-10">
+    <div className="h-full md:h-screen overflow-y-scroll">
+      <div className="mx-4 my-6 md:m-20 space-y-10">
         <section id="prediksi">
           <h2 className="text-lg md:text-xl font-bold mb-5">Lihat Prediksi Harga Beras</h2>
           <Tabs value={activeTab}>

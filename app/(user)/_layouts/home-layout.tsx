@@ -17,7 +17,6 @@ const HomeSection = dynamic(() => import('../_components/home-section'), { ssr: 
 const MemberSection = dynamic(() => import('../_components/member-section'), { ssr: false })
 const TechnologySection = dynamic(() => import('../_components/technology-section'), { ssr: false })
 const CalculatorSection = dynamic(() => import('../_components/calculator-section'), { ssr: false })
-const OtherProjectSection = dynamic(() => import('../_components/other-project-section'), { ssr: false })
 
 const HomeLayout = () => {
   const [allMedium, setAllMedium] = useState<Data[]>([])
@@ -216,7 +215,6 @@ const HomeLayout = () => {
                           allPremium={allPremium}
                         />
                       )}
-                      {menu.section === 'other-projects' && <OtherProjectSection />}
                     </motion.div>
                   </motion.div>
                 )}
@@ -226,17 +224,21 @@ const HomeLayout = () => {
         </section>
       </main>
       <main className="block md:hidden">
-        <div className="flex flex-col h-full min-h-screen">
+        <div className="flex flex-col h-screen">
           {MENU_HOME.map((menu, i) => (
             <>
               <button
                 onClick={() => handleClick(i)}
                 key={i}
-                className="flex items-center gap-4 text-xl font-bold p-3 border-b-2 border-b-black">
+                className={cn(
+                  'flex items-center gap-4 text-xl font-bold p-3 border-b-2 border-b-black',
+                  active === i && 'bg-primary text-primary-foreground',
+                  i - 1 === active && 'border-t-2 border-t-black'
+                )}>
                 {menu.name}
               </button>
               {active === i && (
-                <div className="flex-1">
+                <div className="h-[75vh] overflow-y-scroll">
                   {menu.section === 'beranda' && <HomeSection />}
                   {menu.section === 'anggota' && <MemberSection />}
                   {menu.section === 'teknologi' && <TechnologySection />}
@@ -248,7 +250,6 @@ const HomeLayout = () => {
                       allPremium={allPremium}
                     />
                   )}
-                  {menu.section === 'other-projects' && <OtherProjectSection />}
                 </div>
               )}
             </>

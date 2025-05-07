@@ -8,8 +8,8 @@ const HomeSection = () => {
   const navigate = useRouter()
 
   return (
-    <div className="h-[77vh] md:h-screen  overflow-y-scroll">
-      <div className="mx-4 mt-4 mb-0 md:m-20 space-y-10">
+    <div className="h-full md:h-screen overflow-y-scroll">
+      <div className="mx-4 my-6 md:m-20 space-y-10">
         <section className="flex md:justify-between items-center" id="hero">
           <div className="md:basis-1/2">
             <h1 className="text-xl md:text-3xl font-bold">Prediksi Harga Beras di Indonesia</h1>

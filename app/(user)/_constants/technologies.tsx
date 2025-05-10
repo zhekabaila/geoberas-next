@@ -1,5 +1,6 @@
 import { RiNextjsFill, RiTailwindCssFill, RiNodejsFill } from 'react-icons/ri'
 import { BiLogoTypescript } from 'react-icons/bi'
+import { ChartColumnIncreasing, Framer, SquareLibrary } from 'lucide-react'
 
 export const technologies = [
   {
@@ -24,17 +25,17 @@ export const technologies = [
   },
   {
     name: 'Motion',
-    icon: <RiNodejsFill size={50} />,
-    link: 'https://nodejs.org/en'
+    icon: <Framer size={50} />,
+    link: 'https://motion.dev/'
   },
   {
     name: 'Zustand',
-    icon: <RiNodejsFill size={50} />,
-    link: 'https://nodejs.org/en'
+    icon: <SquareLibrary size={50} />,
+    link: 'https://zustand.docs.pmnd.rs/getting-started/introduction'
   },
   {
     name: 'Chart.js',
-    icon: <RiNodejsFill size={50} />,
-    link: 'https://nodejs.org/en'
+    icon: <ChartColumnIncreasing size={50} />,
+    link: 'https://www.chartjs.org/'
   }
 ]

@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils'
 import { motion, AnimatePresence } from 'framer-motion'
 import { MENU_HOME } from '../_constants/data'
 import dynamic from 'next/dynamic'
-import { ArrowBigUp } from 'lucide-react'
+import { ArrowBigRight, ArrowBigUp } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Data } from '../types'
 
@@ -235,6 +235,7 @@ const HomeLayout = () => {
                   active === i && 'bg-primary text-primary-foreground',
                   i - 1 === active && 'border-t-2 border-t-black'
                 )}>
+                {active === i && <ArrowBigRight className="w-5 h-5" />}
                 {menu.name}
               </button>
               {active === i && (

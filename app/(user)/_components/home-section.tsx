@@ -2,6 +2,7 @@
 import { Button } from '@/components/ui/button'
 import Image from 'next/image'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 
 const HomeSection = () => {
   const searchParams = useSearchParams()
@@ -103,6 +104,19 @@ const HomeSection = () => {
             </div>
           </div>
         </div>
+        <section className="max-w-3xl">
+          <h2 className="text-xl font-bold">FAQ</h2>
+          <Accordion type="single" collapsible>
+            <AccordionItem value="item-1">
+              <AccordionTrigger>Dari mana data harga beras diperoleh?</AccordionTrigger>
+              <AccordionContent>
+                Data harga beras yang digunakan oleh Geoberas berasal dari sumber resmi seperti Badan Pusat Statistik (BPS)
+                dan Kementerian Pertanian. Data yang diperoleh adalah data dari bulan januari hingga awal april. Data ini
+                kemudian dianalisis untuk membuat prediksi harga di masa mendatang.
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </section>
       </div>
     </div>
   )

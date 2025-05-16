@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button'
 import Image from 'next/image'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
+import { faqData } from '../_constants/faq'
 
 const HomeSection = () => {
   const searchParams = useSearchParams()
@@ -10,10 +11,10 @@ const HomeSection = () => {
 
   return (
     <div className="h-full md:h-screen overflow-y-scroll">
-      <div className="mx-4 my-6 md:m-20 space-y-10">
+      <div className="mx-4 my-6 md:m-20 space-y-20">
         <section className="flex md:justify-between items-center" id="hero">
           <div className="md:basis-1/2">
-            <h1 className="text-xl md:text-3xl font-bold">Prediksi Harga Beras di Indonesia</h1>
+            <h1 className="text-xl md:text-3xl font-bold mb-5">Prediksi Harga Beras di Indonesia</h1>
             <div className="block md:hidden">
               <Image
                 src="/images/logo_beras.png"
@@ -32,7 +33,7 @@ const HomeSection = () => {
               menggunakan metode matematis terkini untuk hasil yang lebih akurat.
             </p>
             <Button
-              className="mt-3"
+              className="mt-7"
               onClick={() => {
                 const params = new URLSearchParams(searchParams.toString())
 
@@ -40,15 +41,15 @@ const HomeSection = () => {
 
                 navigate.replace(`?${params.toString()}`, { scroll: false })
               }}>
-              <a href="#grafik">Lihat Prediksi</a>
+              Lihat Prediksi
             </Button>
           </div>
           <div className="hidden md:flex justify-end items-center basis-1/2">
             <Image src="/images/logo_beras.png" alt="logo" width={350} height={350} />
           </div>
         </section>
-        <div className="mt-5 bg-background rounded-md">
-          <h2 className="text-xl font-bold">Metodologi Perhitungan Prediksi</h2>
+        <section className="bg-background rounded-md">
+          <h2 className="text-xl md:text-3xl font-bold">Metodologi Perhitungan Prediksi</h2>
           <p className="text-base  mt-2">
             Prediksi harga beras di Indonesia pada aplikasi ini menggunakan metode{' '}
             <span className="font-semibold">barisan geometri</span> dengan langkah-langkah sebagai berikut:
@@ -62,7 +63,7 @@ const HomeSection = () => {
               <h3 className="text-lg font-semibold">2. Hitung Rasio Pertumbuhan Harian</h3>
               <p className=" mt-1">Hitung rasio pertumbuhan harian dengan rumus:</p>
               <div className="bg-secondary/50 p-4 rounded-md mt-2">
-                <p className="font-mono">Rasio-i = Harga hari ke-i / Harga hari ke-(i-1)</p>
+                <p className="font-mono">Rasio-i = Harga hari ke-i / Harga hari ke (i-1)</p>
               </div>
               <p className="text-sm  mt-2">Lakukan perhitungan ini untuk setiap hari dalam data (kecuali hari pertama).</p>
             </div>
@@ -103,63 +104,18 @@ const HomeSection = () => {
               </ul>
             </div>
           </div>
-        </div>
-        <section className="max-w-3xl">
-          <h2 className="text-xl font-bold">FAQs</h2>
+        </section>
+        <section>
+          <h2 className="text-xl md:text-3xl font-bold">FAQ</h2>
           <Accordion type="single" collapsible>
-            <AccordionItem value="item-1">
-              <AccordionTrigger>Dari mana data harga beras diperoleh?</AccordionTrigger>
-              <AccordionContent>
-                Data harga beras yang digunakan oleh Geoberas berasal dari sumber resmi seperti Badan Pusat Statistik (BPS)
-                dan Kementerian Pertanian. Data yang diperoleh adalah data dari bulan januari hingga awal april. Data ini
-                kemudian dianalisis untuk membuat prediksi harga di masa mendatang.
-              </AccordionContent>
-            </AccordionItem>
-            <AccordionItem value="item-2">
-              <AccordionTrigger>Apa itu geoberas?</AccordionTrigger>
-              <AccordionContent>
-              Geoberas adalah aplikasi web yang memanfaatkan rumus barisan geometri untuk memberikan prediksi harga beras di wilayah indonesia. Dengan menggabungkan data historis dan model prediktif(perhitungan barisan geometri), Geoberas membantu pengguna memahami tren harga beras di daerah indonesia.
-              </AccordionContent>
-            </AccordionItem>
-            <AccordionItem value="item-3">
-              <AccordionTrigger>Apakah Geoberas dapat diakses melalui perangkat mobile?
-              </AccordionTrigger>
-              <AccordionContent>
-              Ya, Geoberas dirancang responsif dan dapat diakses melalui berbagai perangkat, termasuk smartphone dan tablet.
-              </AccordionContent>
-            </AccordionItem>
-            <AccordionItem value="item-4">
-              <AccordionTrigger>Bisa memprediksi beras apa saja di geoberas?</AccordionTrigger>
-              <AccordionContent>
-              geoberas bisa memprediksi harga beras medium dan harga beras premium sesuai data yang didapatkan oleh tim geoberas.
-              Data beras medium itu dari 2025-01-17 sampe 2025-04-17
-              sedangkan data beras premium dari 2025-01-15 sampe 2025-04-15
-              </AccordionContent>
-            </AccordionItem>
-            <AccordionItem value="item-5">
-              <AccordionTrigger>Bagaimana cara kerja Geoberas?</AccordionTrigger>
-              <AccordionContent>
-              Geoberas meminta pengguna untuk memasukkan:<br/><br/>
-	            •	Harga awal (a)<br/>
-            	•	Rasio perubahan (r)<br/>
-            	•	Jumlah bulan (n)<br/><br/>
-
-              Aplikasi kemudian menghitung harga beras ke-n menggunakan rumus barisan geometri:<br/>
-              Un = a × r^(n-1)
-              </AccordionContent>
-            </AccordionItem>
-            <AccordionItem value="item-6">
-              <AccordionTrigger>Apakah prediksi ini akurat?</AccordionTrigger>
-              <AccordionContent>
-              Prediksi ini bersifat teoretis dan mengasumsikan pertumbuhan harga konstan sesuai rasio yang ditentukan. Meskipun tidak mencerminkan data riil pasar, ini berguna untuk simulasi dan pembelajaran matematika.
-              </AccordionContent>
-            </AccordionItem>
-            <AccordionItem value="item-7">
-              <AccordionTrigger>Mengapa digunakan barisan geometri untuk prediksi harga beras?</AccordionTrigger>
-              <AccordionContent>
-              Barisan geometri cocok digunakan karena mencerminkan kenaikan harga yang bersifat eksponensial, misalnya akibat inflasi atau tren pasar yang terus naik atau bahkan turun.
-              </AccordionContent>
-            </AccordionItem>
+            {faqData.map((faq) => (
+              <AccordionItem key={faq.id} value={faq.id} className="border-b-black">
+                <AccordionTrigger className="text-lg font-semibold">{faq.question}</AccordionTrigger>
+                <AccordionContent>
+                  <div dangerouslySetInnerHTML={{ __html: faq.answer }} className="text-base" />
+                </AccordionContent>
+              </AccordionItem>
+            ))}
           </Accordion>
         </section>
       </div>

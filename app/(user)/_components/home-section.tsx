@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { faqData } from '../_constants/faq'
+import Copyright from './copyright'
 
 const HomeSection = () => {
   const searchParams = useSearchParams()
@@ -14,7 +15,7 @@ const HomeSection = () => {
       <div className="mx-4 my-6 md:m-20 space-y-20">
         <section className="flex md:justify-between items-center" id="hero">
           <div className="md:basis-1/2">
-            <h1 className="text-xl md:text-3xl font-bold mb-5">Prediksi Harga Beras di Indonesia</h1>
+            <h1 className="text-lg md:text-3xl font-bold mb-5">Prediksi Harga Beras di Indonesia</h1>
             <div className="block md:hidden">
               <Image
                 src="/images/logo_beras.png"
@@ -24,10 +25,10 @@ const HomeSection = () => {
                 className="w-full h-auto aspect-square"
               />
             </div>
-            <p className="text-base md:text-lg mt-1">
+            <p className="text-sm lg:text-base mt-1">
               Analisis prediksi harga beras di indonesia pada tahun 2025 menggunakan model matematika{' '}
             </p>
-            <p className="text-base md:text-lg mt-2">
+            <p className="text-sm lg:text-base mt-2">
               Dapatkan wawasan terbaru mengenai tren harga beras di Indonesia. Prediksi ini membantu Anda dalam mengambil
               keputusan yang lebih baik, baik untuk kebutuhan rumah tangga maupun bisnis. Data yang disajikan diolah
               menggunakan metode matematis terkini untuk hasil yang lebih akurat.
@@ -49,43 +50,47 @@ const HomeSection = () => {
           </div>
         </section>
         <section className="bg-background rounded-md">
-          <h2 className="text-xl md:text-3xl font-bold">Metodologi Perhitungan Prediksi</h2>
-          <p className="text-base  mt-2">
+          <h2 className="text-lg md:text-3xl font-bold">Metodologi Perhitungan Prediksi</h2>
+          <p className="text-sm lg:text-base mt-2">
             Prediksi harga beras di Indonesia pada aplikasi ini menggunakan metode{' '}
             <span className="font-semibold">barisan geometri</span> dengan langkah-langkah sebagai berikut:
           </p>
           <div className="mt-4 space-y-4">
             <div>
-              <h3 className="text-lg font-semibold">1. Pengambilan Data Harga Harian</h3>
-              <p className=" mt-1">Ambil data harga beras harian dari data historis yang tersedia.</p>
+              <h3 className="text-base lg:text-lg font-semibold">1. Pengambilan Data Harga Harian</h3>
+              <p className="text-sm lg:text-base mt-1">Ambil data harga beras harian dari data historis yang tersedia.</p>
             </div>
             <div>
-              <h3 className="text-lg font-semibold">2. Hitung Rasio Pertumbuhan Harian</h3>
-              <p className=" mt-1">Hitung rasio pertumbuhan harian dengan rumus:</p>
+              <h3 className="text-base lg:text-lg font-semibold">2. Hitung Rasio Pertumbuhan Harian</h3>
+              <p className="text-sm lg:text-base mt-1">Hitung rasio pertumbuhan harian dengan rumus:</p>
               <div className="bg-secondary/50 p-4 rounded-md mt-2">
-                <p className="font-mono">Rasio-i = Harga hari ke-i / Harga hari ke (i-1)</p>
+                <p className="text-xs lg:text-base font-mono">Rasio-i = Harga hari ke-i / Harga hari ke (i-1)</p>
               </div>
-              <p className="text-sm  mt-2">Lakukan perhitungan ini untuk setiap hari dalam data (kecuali hari pertama).</p>
+              <p className="text-sm lg:text-base mt-2">
+                Lakukan perhitungan ini untuk setiap hari dalam data (kecuali hari pertama).
+              </p>
             </div>
             <div>
-              <h3 className="text-lg font-semibold">3. Hitung Rata-rata Rasio Pertumbuhan</h3>
-              <p className=" mt-1">
+              <h3 className="text-base lg:text-lg font-semibold">3. Hitung Rata-rata Rasio Pertumbuhan</h3>
+              <p className="text-sm lg:text-base mt-1">
                 Setelah mendapatkan seluruh rasio harian, hitung rata-rata dari semua rasio tersebut dengan rumus:
               </p>
               <div className="bg-secondary/50 p-4 rounded-md mt-2">
-                <p className="font-mono">r = (r₁ + r₂ + ... + rₙ) / n</p>
+                <p className="text-xs lg:text-base font-mono">r = (r₁ + r₂ + ... + rₙ) / n</p>
               </div>
-              <p className="text-sm  mt-2">
+              <p className="text-sm lg:text-base mt-2">
                 Di mana r₁, r₂, ..., rₙ adalah rasio pertumbuhan harian dan n adalah jumlah rasio yang dihitung.
               </p>
             </div>
             <div>
-              <h3 className="text-lg font-semibold">4. Prediksi Harga Hari Berikutnya</h3>
-              <p className=" mt-1">Prediksi harga untuk hari ke-mendatang dihitung dengan rumus barisan geometri:</p>
+              <h3 className="text-base lg:text-lg font-semibold">4. Prediksi Harga Hari Berikutnya</h3>
+              <p className="text-sm lg:text-base mt-1">
+                Prediksi harga untuk hari ke-mendatang dihitung dengan rumus barisan geometri:
+              </p>
               <div className="bg-secondary/50 p-4 rounded-md mt-2">
-                <p className="font-mono">Harga Prediksi ke-k = Harga Terakhir × r^k</p>
+                <p className="text-xs lg:text-base font-mono">Harga Prediksi ke-k = Harga Terakhir × r^k</p>
               </div>
-              <p className="text-sm  mt-2">
+              <p className="text-sm lg:text-base mt-2">
                 Di mana:
                 <br />
                 - Harga Terakhir adalah harga pada hari terakhir data historis
@@ -95,8 +100,8 @@ const HomeSection = () => {
               </p>
             </div>
             <div>
-              <h3 className="text-lg font-semibold">5. Karakteristik Model</h3>
-              <ul className="list-disc list-inside  mt-1 space-y-2">
+              <h3 className="text-base lg:text-lg font-semibold">5. Karakteristik Model</h3>
+              <ul className="list-disc list-inside text-sm lg:text-base mt-1 space-y-2">
                 <li>Model ini mengasumsikan pertumbuhan harga mengikuti pola geometri (rasio tetap setiap hari).</li>
                 <li>Prediksi sangat bergantung pada pola pertumbuhan historis harga beras.</li>
                 <li>Hasil prediksi dibulatkan hingga 3 angka desimal untuk akurasi yang lebih baik.</li>
@@ -110,15 +115,16 @@ const HomeSection = () => {
           <Accordion type="single" collapsible>
             {faqData.map((faq) => (
               <AccordionItem key={faq.id} value={faq.id} className="border-b-black">
-                <AccordionTrigger className="text-lg font-semibold">{faq.question}</AccordionTrigger>
+                <AccordionTrigger className="text-sm lg:text-lg font-semibold">{faq.question}</AccordionTrigger>
                 <AccordionContent>
-                  <div dangerouslySetInnerHTML={{ __html: faq.answer }} className="text-base" />
+                  <div dangerouslySetInnerHTML={{ __html: faq.answer }} className="text-xs lg:text-base" />
                 </AccordionContent>
               </AccordionItem>
             ))}
           </Accordion>
         </section>
       </div>
+      <Copyright />
     </div>
   )
 }

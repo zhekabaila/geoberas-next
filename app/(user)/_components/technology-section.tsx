@@ -1,9 +1,10 @@
 import Link from 'next/link'
 import { technologies } from '../_constants/technologies'
+import Copyright from './copyright'
 
 const TechnologySection = () => {
   return (
-    <div className="h-full md:h-screen overflow-y-scroll">
+    <div className="relative h-full md:h-screen overflow-y-scroll">
       <div className="mx-4 my-6 md:m-20 space-y-10">
         <h1 className="text-xl md:text-3xl font-bold">Teknologi yang digunakan</h1>
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-5 lg:gap-10">
@@ -18,6 +19,9 @@ const TechnologySection = () => {
             </div>
           ))}
         </div>
+      </div>
+      <div className="relative lg:absolute bottom-0 w-full">
+        <Copyright />
       </div>
     </div>
   )

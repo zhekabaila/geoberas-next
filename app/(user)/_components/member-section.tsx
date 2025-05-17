@@ -1,5 +1,6 @@
 'use client'
 import Image from 'next/image'
+import Copyright from './copyright'
 
 const MemberSection = () => {
   const members = [
@@ -36,7 +37,7 @@ const MemberSection = () => {
   ]
 
   return (
-    <div className="h-full md:h-screen overflow-y-scroll">
+    <div className="relative h-full md:h-screen overflow-y-scroll">
       <div className="mx-4 my-6 md:m-20 space-y-10">
         <div className="text-center">
           <h1 className="text-3xl font-bold text-gray-800">Anggota Kelompok</h1>
@@ -73,6 +74,9 @@ const MemberSection = () => {
             </div>
           ))}
         </div>
+      </div>
+      <div className="relative lg:absolute bottom-0 w-full">
+        <Copyright />
       </div>
     </div>
   )

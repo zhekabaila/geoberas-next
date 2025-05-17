@@ -19,6 +19,7 @@ import BarChartComponent from './bar-chart'
 import { toast } from 'sonner'
 import PerhitunganMedium from './perhitungan-medium'
 import PerhitunganPremium from './perhitungan-premium'
+import Copyright from './copyright'
 
 interface IProps {
   mediumFetching: boolean
@@ -313,6 +314,7 @@ const CalculatorSection = ({ mediumFetching, premiumFetching, allMedium, allPrem
           </Tabs>
         </section>
       </div>
+      <Copyright />
     </div>
   )
 }

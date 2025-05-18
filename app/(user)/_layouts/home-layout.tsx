@@ -191,7 +191,7 @@ const HomeLayout = () => {
                           duration: 1
                         },
                         opacity: {
-                          duration: 0.0
+                          duration: 0.5
                         }
                       }
                     }}

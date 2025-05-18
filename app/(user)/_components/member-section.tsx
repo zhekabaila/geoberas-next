@@ -2,42 +2,42 @@
 import Image from 'next/image'
 import Copyright from './copyright'
 
-const MemberSection = () => {
-  const members = [
-    {
-      name: 'Ranji Pauzi Rohman',
-      npm: '237006111',
-      email: '237006111@student.unsil.ac.id',
-      image: '/images/gambar_anggota_1.jpg'
-    },
-    {
-      name: 'Zheka Baila Arkan',
-      npm: '247006111152',
-      email: '247006111152@student.unsil.ac.id',
-      image: '/images/gambar_anggota_2.jpg'
-    },
-    {
-      name: 'Muhammad Fauzan Gemilang',
-      npm: '247006111154',
-      email: '247006111154@student.unsil.ac.id',
-      image: '/images/gambar_anggota_3.jpg'
-    },
-    {
-      name: 'Muhammad Nazril Putra Rosida',
-      npm: '247006111162',
-      email: '247006111162@student.unsil.ac.id',
-      image: '/images/gambar_anggota_4.jpg'
-    },
-    {
-      name: 'Chintia Aurizki Putri',
-      npm: '247006111175',
-      email: '247006111175@student.unsil.ac.id',
-      image: '/images/gambar_anggota_5.jpg'
-    }
-  ]
+export const members = [
+  {
+    name: 'Ranji Pauzi Rohman',
+    npm: '237006111',
+    email: '237006111@student.unsil.ac.id',
+    image: '/images/gambar_anggota_1.jpg'
+  },
+  {
+    name: 'Zheka Baila Arkan',
+    npm: '247006111152',
+    email: '247006111152@student.unsil.ac.id',
+    image: '/images/gambar_anggota_2.jpg'
+  },
+  {
+    name: 'Muhammad Fauzan Gemilang',
+    npm: '247006111154',
+    email: '247006111154@student.unsil.ac.id',
+    image: '/images/gambar_anggota_3.jpg'
+  },
+  {
+    name: 'Muhammad Nazril Putra Rosida',
+    npm: '247006111162',
+    email: '247006111162@student.unsil.ac.id',
+    image: '/images/gambar_anggota_4.jpg'
+  },
+  {
+    name: 'Chintia Aurizki Putri',
+    npm: '247006111175',
+    email: '247006111175@student.unsil.ac.id',
+    image: '/images/gambar_anggota_5.jpg'
+  }
+]
 
+const MemberSection = () => {
   return (
-    <div className="relative h-full md:h-screen overflow-y-scroll">
+    <div className="relative flex flex-col justify-between h-full md:h-screen overflow-y-scroll">
       <div className="mx-4 my-6 md:m-20 space-y-10">
         <div className="text-center">
           <h1 className="text-3xl font-bold text-gray-800">Anggota Kelompok</h1>
@@ -75,9 +75,7 @@ const MemberSection = () => {
           ))}
         </div>
       </div>
-      <div className="relative lg:absolute bottom-0 w-full">
-        <Copyright />
-      </div>
+      <Copyright />
     </div>
   )
 }

@@ -5,6 +5,15 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { faqData } from '../_constants/faq'
 import Copyright from './copyright'
+import { z } from 'zod'
+import ReportSection from './report-section'
+
+export const reportSchema = z.object({
+  name: z.string().min(3, 'Nama harus lebih dari 3 karakter'),
+  email: z.string().email('Email tidak valid'),
+  message: z.string().min(3, 'Pesan harus lebih dari 3 karakter'),
+  image: z.any()
+})
 
 const HomeSection = () => {
   const searchParams = useSearchParams()
@@ -123,6 +132,7 @@ const HomeSection = () => {
             ))}
           </Accordion>
         </section>
+        <ReportSection />
       </div>
       <Copyright />
     </div>

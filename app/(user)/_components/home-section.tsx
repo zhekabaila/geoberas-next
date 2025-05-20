@@ -123,7 +123,7 @@ const HomeSection = () => {
           <h2 className="text-xl md:text-3xl font-bold">FAQ</h2>
           <Accordion type="single" collapsible>
             {faqData.map((faq) => (
-              <AccordionItem key={faq.id} value={faq.id} className="border-b-black">
+              <AccordionItem key={`faq-${faq.id}`} value={faq.id} className="border-b-black">
                 <AccordionTrigger className="text-sm lg:text-lg font-semibold">{faq.question}</AccordionTrigger>
                 <AccordionContent>
                   <div dangerouslySetInnerHTML={{ __html: faq.answer }} className="text-xs lg:text-base" />

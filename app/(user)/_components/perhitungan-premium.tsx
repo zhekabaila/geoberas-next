@@ -73,7 +73,7 @@ const PerhitunganPremium = ({ data, targetDate }: IProps) => {
             </TableHeader>
             <TableBody>
               {perhitungan?.map((item) => (
-                <TableRow key={item.date}>
+                <TableRow key={`perhitungan-${item.date}`}>
                   <TableCell>{item.date}</TableCell>
                   <TableCell>{item.currentPrice}</TableCell>
                   <TableCell>{item.previousPrice}</TableCell>
@@ -104,7 +104,7 @@ const PerhitunganPremium = ({ data, targetDate }: IProps) => {
             </TableHeader>
             <TableBody>
               {hasilPrediksi.map((item, index) => (
-                <TableRow key={item.date}>
+                <TableRow key={`hasil-prediksi-${item.date}`}>
                   <TableCell>{item.date}</TableCell>
                   <TableCell>
                     {hargaTerakhir} x {rataRasio}

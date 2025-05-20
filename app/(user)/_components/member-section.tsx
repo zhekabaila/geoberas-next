@@ -47,7 +47,7 @@ const MemberSection = () => {
         <div className="flex flex-wrap justify-center gap-8 mb-8">
           {members.slice(0, 3).map((member) => (
             <div
-              key={member.name}
+              key={`member-${member.name}`}
               className="bg-[#d6d0c6] p-5 rounded-2xl shadow-md hover:shadow-xl transition-transform transform hover:scale-105 w-[280px] text-center border border-gray-300">
               <div className="flex justify-center mb-3">
                 <Image src={member.image} alt={member.name} width={80} height={80} className="rounded-lg" />

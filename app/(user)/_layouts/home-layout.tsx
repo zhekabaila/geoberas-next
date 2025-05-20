@@ -22,12 +22,11 @@ const HomeLayout = () => {
   const [allMedium, setAllMedium] = useState<Data[]>([])
   const [allPremium, setAllPremium] = useState<Data[]>([])
 
-  const { setMedium, loading, setLoading, fetching: mediumFetching, setFetching: setMediumFetching } = useMediumStore()
+  const { setMedium, loading, setLoading, setFetching: setMediumFetching } = useMediumStore()
   const {
     setPremium,
     loading: premiumLoading,
     setLoading: setPremiumLoading,
-    fetching: premiumFetching,
     setFetching: setPremiumFetching
   } = usePremiumStore()
 
@@ -141,7 +140,7 @@ const HomeLayout = () => {
       <main className="hidden md:block h-screen overflow-hidden w-screen">
         <section className="flex h-full">
           {MENU_HOME.map((menu, i) => (
-            <div key={i} className={cn('flex', active === i ? 'flex-1' : 'flex-none')}>
+            <div key={`menu-${i}`} className={cn('flex', active === i ? 'flex-1' : 'flex-none')}>
               <motion.button
                 type="button"
                 onClick={() => handleClick(i)}
@@ -207,14 +206,7 @@ const HomeLayout = () => {
                       {menu.section === 'beranda' && <HomeSection />}
                       {menu.section === 'anggota' && <MemberSection />}
                       {menu.section === 'teknologi' && <TechnologySection />}
-                      {menu.section === 'kalkulator' && (
-                        <CalculatorSection
-                          mediumFetching={mediumFetching}
-                          premiumFetching={premiumFetching}
-                          allMedium={allMedium}
-                          allPremium={allPremium}
-                        />
-                      )}
+                      {menu.section === 'kalkulator' && <CalculatorSection allMedium={allMedium} allPremium={allPremium} />}
                     </motion.div>
                   </motion.div>
                 )}
@@ -229,7 +221,7 @@ const HomeLayout = () => {
             <>
               <button
                 onClick={() => handleClick(i)}
-                key={i}
+                key={`menu-${i}`}
                 className={cn(
                   'flex items-center gap-4 text-xl font-bold p-3 border-b-2 border-b-black',
                   active === i && 'bg-primary text-primary-foreground',
@@ -243,14 +235,7 @@ const HomeLayout = () => {
                   {menu.section === 'beranda' && <HomeSection />}
                   {menu.section === 'anggota' && <MemberSection />}
                   {menu.section === 'teknologi' && <TechnologySection />}
-                  {menu.section === 'kalkulator' && (
-                    <CalculatorSection
-                      mediumFetching={mediumFetching}
-                      premiumFetching={premiumFetching}
-                      allMedium={allMedium}
-                      allPremium={allPremium}
-                    />
-                  )}
+                  {menu.section === 'kalkulator' && <CalculatorSection allMedium={allMedium} allPremium={allPremium} />}
                 </div>
               )}
             </>

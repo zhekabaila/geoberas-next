@@ -22,13 +22,11 @@ import PerhitunganPremium from './perhitungan-premium'
 import Copyright from './copyright'
 
 interface IProps {
-  mediumFetching: boolean
-  premiumFetching: boolean
   allMedium: Data[]
   allPremium: Data[]
 }
 
-const CalculatorSection = ({ mediumFetching, premiumFetching, allMedium, allPremium }: IProps) => {
+const CalculatorSection = ({ allMedium, allPremium }: IProps) => {
   const {
     medium,
     setPrediksi: setMediumPrediksi,
@@ -43,8 +41,6 @@ const CalculatorSection = ({ mediumFetching, premiumFetching, allMedium, allPrem
     setPrediksiNull: setPremiumPrediksiNull,
     removePrediksiFromData: removePremiumPrediksiFromData
   } = usePremiumStore()
-
-  console.log(mediumFetching, premiumFetching)
 
   const [prediksiPayload, setPrediksiPayload] = useState<{
     jenis: 'medium' | 'premium'
@@ -104,7 +100,7 @@ const CalculatorSection = ({ mediumFetching, premiumFetching, allMedium, allPrem
       if (ctx) {
         // Pilih data berdasarkan tab aktif
         const currentData = activeTab === 'medium' ? medium : premium
-        const labels = currentData.map((item) => item.date)
+        const labels = currentData.map((item) => format(new Date(item.date), 'MM/dd'))
         const data = currentData.map((item) => item.price)
 
         const backgroundColor = currentData.map((item) => (item.type === 'prediksi' ? '#667b99' : '#7c8755'))
@@ -236,19 +232,34 @@ const CalculatorSection = ({ mediumFetching, premiumFetching, allMedium, allPrem
                 </TabsTrigger>
               </TabsList>
               <div className="flex flex-col md:flex-row md:items-center gap-2">
-                <div className="flex items-center gap-2">
-                  <DateRangePicker
-                    disableFutureDate
-                    align="end"
-                    selected={dateRange}
-                    onDateChange={handlePrediksiDateChange}
-                    className="w-full md:w-auto"
-                    inputclassName="bg-primary hover:bg-primary/80"
-                  />
-                  <Button variant="default" onClick={() => handleFilter(dateRange)}>
-                    Filter
-                  </Button>
-                </div>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="default">Filter</Button>
+                  </PopoverTrigger>
+                  <PopoverContent align="end">
+                    <div className="flex flex-col gap-4">
+                      <div className="flex flex-col gap-2">
+                        <Label htmlFor="tanggal">Jarak Tanggal</Label>
+                        <DateRangePicker
+                          disableFutureDate
+                          align="end"
+                          selected={dateRange}
+                          onDateChange={handlePrediksiDateChange}
+                          className="w-full md:w-auto"
+                          inputclassName="bg-card hover:bg-primary/40"
+                          fromDate={new Date('2025-01-15')}
+                          toDate={new Date('2025-04-17')}
+                        />
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        <Button variant="default" onClick={() => handleFilter(dateRange)}>
+                          Terapkan
+                        </Button>
+                      </div>
+                    </div>
+                  </PopoverContent>
+                </Popover>
+                <div className="flex items-center gap-2"></div>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button variant="default">Mulai Prediksi</Button>
@@ -276,6 +287,7 @@ const CalculatorSection = ({ mediumFetching, premiumFetching, allMedium, allPrem
                         <DatePicker
                           type="popover"
                           value={prediksiPayload.tanggal}
+                          className="bg-card hover:bg-primary/40"
                           onChange={(date) => setPrediksiPayload({ ...prediksiPayload, tanggal: date })}
                         />
                       </div>
@@ -294,21 +306,13 @@ const CalculatorSection = ({ mediumFetching, premiumFetching, allMedium, allPrem
             {activeTab === 'medium' && (
               <>
                 <BarChartComponent chartRef={chartRef} isPrediksi={!!prediksiMedium} />
-                {!!prediksiMedium && (
-                  <>
-                    <PerhitunganMedium data={allMedium} targetDate={prediksiPayload.tanggal!} />
-                  </>
-                )}
+                {!!prediksiMedium && <PerhitunganMedium data={allMedium} targetDate={prediksiPayload.tanggal!} />}
               </>
             )}
             {activeTab === 'premium' && (
               <>
                 <BarChartComponent chartRef={chartRef} isPrediksi={!!prediksiPremium} />
-                {!!prediksiPremium && (
-                  <>
-                    <PerhitunganPremium data={allPremium} targetDate={prediksiPayload.tanggal!} />
-                  </>
-                )}
+                {!!prediksiPremium && <PerhitunganPremium data={allPremium} targetDate={prediksiPayload.tanggal!} />}
               </>
             )}
           </Tabs>

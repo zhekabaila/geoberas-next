@@ -15,9 +15,10 @@ interface DatePickerProps {
   value?: Date | undefined
   onChange?: (date: Date | undefined) => void
   type?: 'dialog' | 'dropdown' | 'popover'
+  className?: string
 }
 
-export function DatePicker({ onChange, type = 'dialog', value = undefined }: DatePickerProps) {
+export function DatePicker({ onChange, type = 'dialog', value = undefined, className }: DatePickerProps) {
   // const [date, setDate] = React.useState<Date>();
   let date = value
   const [isOpen, setIsOpen] = React.useState(false)
@@ -36,7 +37,11 @@ export function DatePicker({ onChange, type = 'dialog', value = undefined }: Dat
           <DialogTrigger asChild>
             <Button
               variant="outline"
-              className={cn('w-full justify-start gap-2 text-left font-normal', !date && 'text-muted-foreground')}>
+              className={cn(
+                'w-full justify-start gap-2 text-left font-normal',
+                !date && 'text-muted-foreground',
+                className
+              )}>
               <CalendarIcon className="w-4 h-4" />
               {date ? format(date, 'dd MMMM yyyy') : <span>Select a date</span>}
             </Button>
@@ -57,7 +62,11 @@ export function DatePicker({ onChange, type = 'dialog', value = undefined }: Dat
           <DropdownMenuTrigger asChild>
             <Button
               variant="outline"
-              className={cn('w-full justify-start gap-2 text-left font-normal', !date && 'text-muted-foreground')}>
+              className={cn(
+                'w-full justify-start gap-2 text-left font-normal',
+                !date && 'text-muted-foreground',
+                className
+              )}>
               <CalendarIcon className="w-4 h-4" />
               {date ? format(date, 'dd MMMM yyyy') : <span>Select a date</span>}
             </Button>
@@ -72,7 +81,11 @@ export function DatePicker({ onChange, type = 'dialog', value = undefined }: Dat
           <PopoverTrigger asChild>
             <Button
               variant="outline"
-              className={cn('w-full justify-start gap-2 text-left font-normal', !date && 'text-muted-foreground')}>
+              className={cn(
+                'w-full justify-start gap-2 text-left font-normal',
+                !date && 'text-muted-foreground',
+                className
+              )}>
               <CalendarIcon className="w-4 h-4" />
               {date ? format(date, 'dd MMMM yyyy') : <span>Select a date</span>}
             </Button>

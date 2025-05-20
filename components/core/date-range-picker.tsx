@@ -18,6 +18,8 @@ interface IProps {
   disableFutureDate?: boolean
   type?: 'popover' | 'dropdown'
   align?: 'start' | 'end' | 'center'
+  fromDate?: Date
+  toDate?: Date
 }
 
 export function DateRangePicker({
@@ -27,7 +29,9 @@ export function DateRangePicker({
   onDateChange,
   disableFutureDate,
   type = 'popover',
-  align = 'start'
+  align = 'start',
+  fromDate,
+  toDate
 }: React.HTMLAttributes<HTMLDivElement> & IProps) {
   return (
     <div className={cn('grid gap-2', className)}>
@@ -70,6 +74,8 @@ export function DateRangePicker({
                 if (onDateChange) onDateChange(range)
               }}
               numberOfMonths={2}
+              fromDate={fromDate}
+              toDate={toDate}
             />
           </PopoverContent>
         </Popover>
@@ -113,6 +119,8 @@ export function DateRangePicker({
                 if (onDateChange) onDateChange(range)
               }}
               numberOfMonths={2}
+              fromDate={fromDate}
+              toDate={toDate}
             />
           </DropdownMenuContent>
         </DropdownMenu>

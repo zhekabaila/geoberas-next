@@ -11,19 +11,27 @@ interface IProps {
   targetDate: Date
 }
 
+interface IPerhitungan {
+  date: string
+  currentPrice: number
+  previousPrice: number
+  ratio: number | string
+  totalRasio: number | string
+}
+
 const PerhitunganMedium = ({ data, targetDate }: IProps) => {
-  const [perhitungan, setPerhitungan] = useState<
-    { date: string; currentPrice: number; previousPrice: number; ratio: number }[]
-  >([])
+  const [perhitungan, setPerhitungan] = useState<IPerhitungan[]>([])
   const [hasilPrediksi, setHasilPrediksi] = useState<Data[]>([])
   const [rataRasio, setRataRasio] = useState<number>(0)
   const [hargaTerakhir, setHargaTerakhir] = useState<number>(0)
+  const [panjangData, setPanjangData] = useState<number>(0)
+  const [totalRasio, setTotalRasio] = useState<number>(0)
 
   useEffect(() => {
     // Perhitungan rasio
     let totalRasio = 0
     let count = 0
-    const perhitunganArr: { date: string; currentPrice: number; previousPrice: number; ratio: number }[] = []
+    const perhitunganArr: IPerhitungan[] = []
 
     for (let i = 1; i < data.length; i++) {
       const currentPrice = data[i].price
@@ -35,13 +43,16 @@ const PerhitunganMedium = ({ data, targetDate }: IProps) => {
         date: data[i].date,
         currentPrice,
         previousPrice,
-        ratio
+        ratio: ratio,
+        totalRasio: totalRasio
       })
     }
 
     const rataRasio = count > 0 ? totalRasio / count : 0
     setPerhitungan(perhitunganArr)
     setRataRasio(rataRasio)
+    setPanjangData(count)
+    setTotalRasio(totalRasio)
 
     // Prediksi harga
     if (data.length > 0) {
@@ -54,9 +65,6 @@ const PerhitunganMedium = ({ data, targetDate }: IProps) => {
       const tanggal = new Date(tanggalTerakhir)
       const hasilPrediksiArr: Data[] = []
 
-      console.log('DATAAAA', data)
-      console.log('TANGGAL TARGET', targetDate, tanggal, tanggalTarget, tanggal < tanggalTarget)
-
       while (tanggal < tanggalTarget) {
         tanggal.setDate(tanggal.getDate() + 1)
         const hargaPrediksi = hargaTerakhir * Math.pow(rataRasio, index)
@@ -67,7 +75,6 @@ const PerhitunganMedium = ({ data, targetDate }: IProps) => {
         index++
       }
 
-      console.log('HASIL PREDIKSI ARR', hasilPrediksiArr)
       setHasilPrediksi(hasilPrediksiArr)
     } else {
       setHargaTerakhir(0)
@@ -84,20 +91,22 @@ const PerhitunganMedium = ({ data, targetDate }: IProps) => {
         <div className="max-h-[350px] overflow-y-scroll">
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead>Tanggal</TableHead>
-                <TableHead>Harga Saat Ini = A</TableHead>
-                <TableHead>Harga Sebelumnya = B</TableHead>
-                <TableHead>Rasio = A/B</TableHead>
+              <TableRow className="border-b-black">
+                <TableHead className="text-sm font-semibold text-black">Tanggal</TableHead>
+                <TableHead className="text-sm font-semibold text-black">Harga Saat Ini = A</TableHead>
+                <TableHead className="text-sm font-semibold text-black">Harga Sebelumnya = B</TableHead>
+                <TableHead className="text-sm font-semibold text-black">Rasio = A/B</TableHead>
+                <TableHead className="text-sm font-semibold text-black">Total Rasio</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {perhitungan?.map((item) => (
-                <TableRow key={item.date}>
+                <TableRow key={`perhitungan-${item.date}`} className="border-b-black/10">
                   <TableCell>{item.date}</TableCell>
                   <TableCell>{item.currentPrice}</TableCell>
                   <TableCell>{item.previousPrice}</TableCell>
                   <TableCell>{item.ratio}</TableCell>
+                  <TableCell>{item.totalRasio}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -105,7 +114,9 @@ const PerhitunganMedium = ({ data, targetDate }: IProps) => {
         </div>
         <div>
           <h3 className="text-base font-medium">Rata-rata Rasio</h3>
-          <p className="text-xs">{rataRasio}</p>
+          <p className="text-xs">
+            {totalRasio} / {panjangData} = {rataRasio}
+          </p>
         </div>
       </div>
       <div className="bg-primary p-4 rounded-md mt-2">
@@ -115,16 +126,16 @@ const PerhitunganMedium = ({ data, targetDate }: IProps) => {
         <div className="max-h-[350px] overflow-y-scroll">
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead>Tanggal</TableHead>
-                <TableHead>
+              <TableRow className="border-b-black">
+                <TableHead className="text-sm font-semibold text-black">Tanggal</TableHead>
+                <TableHead className="text-sm font-semibold text-black">
                   Harga = harga terakhir x rata-rata rasio<sup>hari ke-n</sup>
                 </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {hasilPrediksi?.map((item, index) => (
-                <TableRow key={item.date}>
+                <TableRow key={`hasil-prediksi-${item.date}`} className="border-b-black/10">
                   <TableCell>{item.date}</TableCell>
                   <TableCell>
                     {hargaTerakhir} x {rataRasio}

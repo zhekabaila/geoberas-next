@@ -9,7 +9,7 @@ const ReportSection = () => {
       <p className="text-center font-medium text-base mt-5">Hubungi kami melalui email</p>
       <ul className="grid grid-cols-1 gap-3 mt-4">
         {members.map((member) => (
-          <li key={member.npm}>
+          <li key={`member-${member.npm}`}>
             <Link href={`mailto:${member.email}`} className="flex items-center gap-3 bg-secondary/50 rounded-lg p-2">
               <Image
                 src={member.image}

@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useEffect, useState } from 'react'
 import { Premium } from '../_stores/use-premium-store'
 import { TableCell, TableHeader, TableRow } from '@/components/ui/table'
 import { TableBody } from '@/components/ui/table'
@@ -11,48 +11,75 @@ interface IProps {
   targetDate: Date
 }
 
+interface IPerhitungan {
+  date: string
+  currentPrice: number
+  previousPrice: number
+  ratio: number | string
+  totalRasio: number | string
+}
+
 const PerhitunganPremium = ({ data, targetDate }: IProps) => {
-  const { perhitungan, hasilPrediksi, rataRasio, hargaTerakhir } = useMemo(() => {
+  const [perhitungan, setPerhitungan] = useState<IPerhitungan[]>([])
+  const [hasilPrediksi, setHasilPrediksi] = useState<Data[]>([])
+  const [rataRasio, setRataRasio] = useState<number>(0)
+  const [hargaTerakhir, setHargaTerakhir] = useState<number>(0)
+  const [panjangData, setPanjangData] = useState<number>(0)
+  const [totalRasio, setTotalRasio] = useState<number>(0)
+
+  useEffect(() => {
+    // Perhitungan rasio
     let totalRasio = 0
-    let rataRasio = 0
     let count = 0
-    const perhitungan: { date: string; currentPrice: number; previousPrice: number; ratio: number }[] = []
-    const hasilPrediksi: Data[] = []
+    const perhitunganArr: IPerhitungan[] = []
+
     for (let i = 1; i < data.length; i++) {
       const currentPrice = data[i].price
       const previousPrice = data[i - 1].price
       const ratio = currentPrice / previousPrice
       totalRasio += ratio
       count++
-      perhitungan.push({
+      perhitunganArr.push({
         date: data[i].date,
         currentPrice,
         previousPrice,
-        ratio
+        ratio: ratio,
+        totalRasio: totalRasio
       })
     }
-    rataRasio = count > 0 ? totalRasio / count : 0
 
-    const hargaTerakhir = data[data.length - 1].price
-    const tanggalTerakhir = new Date(data[data.length - 1].date)
-    const tanggalTarget = new Date(targetDate)
+    const rataRasio = count > 0 ? totalRasio / count : 0
+    setPerhitungan(perhitunganArr)
+    setRataRasio(rataRasio)
+    setPanjangData(count)
+    setTotalRasio(totalRasio)
 
-    let index = 1
-    const tanggal = new Date(tanggalTerakhir)
+    // Prediksi harga
+    if (data.length > 0) {
+      const hargaTerakhir = data[data.length - 1].price
+      setHargaTerakhir(hargaTerakhir)
+      const tanggalTerakhir = new Date(data[data.length - 1].date)
+      const tanggalTarget = new Date(targetDate)
 
-    while (tanggal < tanggalTarget) {
-      tanggal.setDate(tanggal.getDate() + 1)
-      const hargaPrediksi = hargaTerakhir * Math.pow(rataRasio, index)
+      let index = 1
+      const tanggal = new Date(tanggalTerakhir)
+      const hasilPrediksiArr: Data[] = []
 
-      hasilPrediksi.push({
-        date: tanggal.toISOString().split('T')[0],
-        price: parseFloat(hargaPrediksi.toFixed(3))
-      })
+      while (tanggal < tanggalTarget) {
+        tanggal.setDate(tanggal.getDate() + 1)
+        const hargaPrediksi = hargaTerakhir * Math.pow(rataRasio, index)
+        hasilPrediksiArr.push({
+          date: tanggal.toISOString().split('T')[0],
+          price: parseFloat(hargaPrediksi.toFixed(3))
+        })
+        index++
+      }
 
-      index++
+      setHasilPrediksi(hasilPrediksiArr)
+    } else {
+      setHargaTerakhir(0)
+      setHasilPrediksi([])
     }
-
-    return { perhitungan, hasilPrediksi, rataRasio, hargaTerakhir }
   }, [data, targetDate])
 
   return (
@@ -64,20 +91,22 @@ const PerhitunganPremium = ({ data, targetDate }: IProps) => {
         <div className="max-h-[350px] overflow-y-scroll">
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead>Tanggal</TableHead>
-                <TableHead>Harga Saat Ini = A</TableHead>
-                <TableHead>Harga Sebelumnya = B</TableHead>
-                <TableHead>Rasio = A/B</TableHead>
+              <TableRow className="border-b-black">
+                <TableHead className="text-sm font-semibold text-black">Tanggal</TableHead>
+                <TableHead className="text-sm font-semibold text-black">Harga Saat Ini = A</TableHead>
+                <TableHead className="text-sm font-semibold text-black">Harga Sebelumnya = B</TableHead>
+                <TableHead className="text-sm font-semibold text-black">Rasio = A/B</TableHead>
+                <TableHead className="text-sm font-semibold text-black">Total Rasio</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {perhitungan?.map((item) => (
-                <TableRow key={`perhitungan-${item.date}`}>
+                <TableRow key={`perhitungan-${item.date}`} className="border-b-black/10">
                   <TableCell>{item.date}</TableCell>
                   <TableCell>{item.currentPrice}</TableCell>
                   <TableCell>{item.previousPrice}</TableCell>
                   <TableCell>{item.ratio}</TableCell>
+                  <TableCell>{item.totalRasio}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -85,7 +114,9 @@ const PerhitunganPremium = ({ data, targetDate }: IProps) => {
         </div>
         <div>
           <h3 className="text-base font-medium">Rata-rata Rasio</h3>
-          <p className="text-xs">{rataRasio}</p>
+          <p className="text-xs">
+            {totalRasio} / {panjangData} = {rataRasio}
+          </p>
         </div>
       </div>
       <div className="bg-primary p-4 rounded-md mt-2">
@@ -95,16 +126,16 @@ const PerhitunganPremium = ({ data, targetDate }: IProps) => {
         <div className="max-h-[350px] overflow-y-scroll">
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead>Tanggal</TableHead>
-                <TableHead>
+              <TableRow className="border-b-black">
+                <TableHead className="text-sm font-semibold text-black">Tanggal</TableHead>
+                <TableHead className="text-sm font-semibold text-black">
                   Harga = harga terakhir x rata-rata rasio<sup>hari ke-n</sup>
                 </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {hasilPrediksi.map((item, index) => (
-                <TableRow key={`hasil-prediksi-${item.date}`}>
+              {hasilPrediksi?.map((item, index) => (
+                <TableRow key={`hasil-prediksi-${item.date}`} className="border-b-black/10">
                   <TableCell>{item.date}</TableCell>
                   <TableCell>
                     {hargaTerakhir} x {rataRasio}
